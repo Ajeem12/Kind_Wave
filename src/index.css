@@ -1,0 +1,14 @@
+@import "tailwindcss";
+
+.modal-overlay {
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+/* Tailwind doesn't have full scrollbar hiding support yet, so use this */
+.hide-scrollbar {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari */
+}
