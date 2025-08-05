@@ -1,8 +1,21 @@
 import { FaArrowRight, FaCamera, FaLock, FaPen, FaRegBell, FaSlidersH } from "react-icons/fa";
+import { MdEvent } from "react-icons/md";
 import { FiLogOut, FiMail, } from "react-icons/fi";
+import useOrgAuthStore from "../../../store/useOrgAuthStore"
+import AddEvent from "../../../components/addevent/AddEvent";
+import { useState } from "react";
 
 
 const ProfilePage = () => {
+    const role = useOrgAuthStore((state) => state.orgUser?.role);
+    const [showAddEventModal, setShowAddEventModal] = useState(false);
+
+
+    const handleAddEventClick = () => {
+        setShowAddEventModal(true);
+    };
+
+
     const profilePageItems = [
         { id: 1, text: 'Edit ProfilePage Photo', icon: <FaCamera />, completed: false },
         { id: 2, text: 'Edit ProfilePage Name', icon: <FaPen />, completed: true },
@@ -10,11 +23,12 @@ const ProfilePage = () => {
         { id: 4, text: 'Change Password', icon: <FaLock />, completed: false },
         { id: 5, text: 'Notifications', icon: <FaRegBell />, completed: false },
         { id: 6, text: 'Preferences', icon: <FaSlidersH />, completed: false },
-        { id: 7, text: 'Log Out', icon: <FiLogOut />, completed: false }
+        { id: 7, text: 'Log Out', icon: <FiLogOut />, completed: false },
+        { id: 8, text: 'Add Event', icon: <MdEvent />, completed: false, onClick: handleAddEventClick },
     ];
 
     return (
-        <div className="relative">
+        <div className="relative mb-10">
             {/* Blue Top Half */}
             <div className="absolute top-0 left-0 right-0 h-1/2 bg-gradient-to-b from-[#49A6d3] to-[#81d0ee]  z-0"></div>
 
@@ -40,6 +54,7 @@ const ProfilePage = () => {
                     {profilePageItems.map((item) => (
                         <div
                             key={item.id}
+                            onClick={item.onClick}
                             className="flex items-center justify-between p-3 rounded-md hover:bg-gray-50 transition"
                         >
                             <div className="flex items-center space-x-3">
@@ -51,6 +66,9 @@ const ProfilePage = () => {
                     ))}
                 </div>
             </div>
+            {showAddEventModal && (
+                <AddEvent onFormClose={() => setShowAddEventModal(false)} />
+            )}
         </div>
     );
 };

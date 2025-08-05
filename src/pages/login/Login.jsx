@@ -14,7 +14,7 @@ const Login = ({ onClose, onSwitchToRegister, role }) => {
     const [email, setEmail] = useState("testingorg@mail.com");
     const [password, setPassword] = useState("12345");
     const [showPassword, setShowPassword] = useState(false);
-    const [rememberMe, setRememberMe] = useState(false);
+    // const [rememberMe, setRememberMe] = useState(false);
     const loginOrg = useOrgAuthStore((state) => state.loginOrg);
 
     const mutation = useMutation({
@@ -127,7 +127,7 @@ const Login = ({ onClose, onSwitchToRegister, role }) => {
                             </button>
                         </div>
 
-                        <div className="flex items-center justify-between">
+                        {/* <div className="flex items-center justify-between">
                             <label className="flex items-center gap-2 text-sm text-gray-600">
                                 <input
                                     type="checkbox"
@@ -141,7 +141,7 @@ const Login = ({ onClose, onSwitchToRegister, role }) => {
                             <a href="#" className="text-sm text-blue-500 hover:underline">
                                 Forgot password?
                             </a>
-                        </div>
+                        </div> */}
 
                         <button
                             type="submit"

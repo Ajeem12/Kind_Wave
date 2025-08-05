@@ -4,11 +4,31 @@
   background-color: rgba(0, 0, 0, 0.2);
 }
 
-/* Tailwind doesn't have full scrollbar hiding support yet, so use this */
 .hide-scrollbar {
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 .hide-scrollbar::-webkit-scrollbar {
-  display: none; /* Chrome, Safari */
+  display: none;
+}
+
+@font-face {
+  font-family: "Whitney";
+  src: url("/font/whitneybook.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* For bold variant (if you have it) */
+/* @font-face {
+  font-family: "Whitney";
+  src: url("/font/whitney/whitneybold.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+} */
+
+body {
+  font-family: "Whitney", Arial, sans-serif;
 }

@@ -4,9 +4,9 @@ const API = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
 });
 
-export const registerOrganization = async (data) => {
+export const getStackHolderCom = async () => {
   try {
-    const response = await API.post("/add_orgnization_journey", data);
+    const response = await API.get("/stack_holder_communitiy");
     return response.data;
   } catch (error) {
     console.error("Registration failed:", error);

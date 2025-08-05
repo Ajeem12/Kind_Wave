@@ -45,15 +45,15 @@ const Org = () => {
         <>
             {location.pathname === "/wishlist" ? null : <SearchBar />}
 
-            <div className="p-6 max-w-6xl mx-auto mb-20 mt-3">
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-5">
+            <div className="p-6 max-w-6xl mx-auto mb-20 ">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
                     {organizations.map((org, index) => (
                         <Link to="/profile" key={index}>
                             <div
                                 className={`relative p-4 rounded-lg flex flex-col items-center justify-center 
-                  hover:bg-gray-50 transition-colors duration-200 h-[150px] w-[155px]  mx-auto
+                  hover:bg-gray-50 transition-colors duration-200 h-[150px] w-[100%]
                   ${index % 2 === 0
-                                        ? "shadow-[2px_2px_4px_rgba(0,0,0,0.1)]"
+                                        ? "shadow-[2px_2px_4px_rgba(0,0,0,0.1)] "
                                         : "shadow-[-2px_2px_4px_rgba(0,0,0,0.1)]"}`}
                             >
                                 <div className="h-40 w-44 md:h-40 mb-2 flex items-center justify-center">

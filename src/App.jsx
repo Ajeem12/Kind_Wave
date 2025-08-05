@@ -1,6 +1,10 @@
 import React, { lazy, Suspense } from 'react'
 import { useEffect } from "react";
 import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom";
+import useOrgAuthStore from "./store/useOrgAuthStore"
+import { Loader2 } from 'lucide-react';
+
+
 const NotFound = lazy(() => import("./pages/404/NotFound"))
 const Landing = lazy(() => import("./pages/landing/Landing"))
 const Explore = lazy(() => import("./pages/explore/Explore"))
@@ -10,8 +14,9 @@ const Application = lazy(() => import("./pages/application/Application"))
 const Profile = lazy(() => import("./pages/profile/Profile"))
 const Layout = lazy(() => import("./layout/Layout"));
 const ProfilePage = lazy(() => import("./pages/profile/profile_page/ProfilePage"))
-import { Loader2 } from 'lucide-react';
-import useOrgAuthStore from "./store/useOrgAuthStore"
+const AddEvent = lazy(() => import("./components/addevent/AddEvent"));
+
+
 
 
 const ProtectedRoute = ({ children }) => {
@@ -65,6 +70,10 @@ const router = createBrowserRouter([
         element: <ProfilePage />
       }
     ],
+  },
+  {
+    path: "/add-event",
+    element: <AddEvent />
   },
   {
     path: "/landing",

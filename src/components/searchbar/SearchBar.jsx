@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
-import { FiSearch, FiFilter } from 'react-icons/fi';
+import { FiSearch } from 'react-icons/fi';
+import { FaFilter } from "react-icons/fa";
 import { RxCross2 } from 'react-icons/rx';
 import BottomSheet from '../filter/BottomSheet ';
 
@@ -46,15 +47,15 @@ const SearchBar = () => {
                     <input
                         type="text"
                         placeholder="Search for events, and organizations."
-                        className="w-full py-3 pl-10 pr-12 text-gray-700 bg-white border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full py-3 pl-10 pr-12 text-gray-700 bg-white border border-gray-400 rounded-lg outline-none "
                     />
                     <FiSearch className="absolute left-3 text-gray-500" size={20} />
                     <button
-                        className="absolute right-3  text-gray-500 hover:text-gray-700"
+                        className="absolute right-3  text-gray-400"
                         onClick={() => setIsFilterOpen(true)}
                         aria-label="Filter options"
                     >
-                        <FiFilter size={20} />
+                        <FaFilter size={20} />
                     </button>
                 </div>
 

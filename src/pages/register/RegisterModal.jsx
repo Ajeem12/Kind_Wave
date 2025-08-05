@@ -49,7 +49,7 @@ const RegisterModal = ({ onClose, role, onSwitchToLogin }) => {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="fixed inset-0 bmodal-overlay z-40"
+                    className="fixed inset-0 modal-overlay z-40"
                     onClick={onClose}
                 />
 

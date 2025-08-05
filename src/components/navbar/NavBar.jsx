@@ -1,20 +1,23 @@
 import React from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Heart, LogOut, Search, User } from "lucide-react";
 import { motion } from "framer-motion";
 import useOrgAuthStore from "../../store/useOrgAuthStore";
 
 const NavBar = () => {
     const location = useLocation();
+    const navigate = useNavigate()
     const logoutOrg = useOrgAuthStore((state) => state.logoutOrg);
 
     const formatPath = (path) => {
         if (path === "/") return "Home";
         return path.slice(1).charAt(0).toUpperCase() + path.slice(2);
     };
-
     const routes = ["/", "/organization", "/application"];
 
+    const handlenavigate = () => {
+        navigate("/landing")
+    }
 
 
     return (
@@ -22,7 +25,7 @@ const NavBar = () => {
             <div className="max-w-6xl mx-auto px-4 py-4 md:py-6 flex justify-between items-center">
                 <Link to="/">               {/* Logo */}
                     <motion.h1
-                        className="text-xl font-bold text-sky-600"
+                        className="text-xl font-bold text-[#06acff]"
                         whileHover={{ scale: 1.05 }}
                         transition={{ type: "spring", stiffness: 300 }}
                     >
@@ -38,14 +41,14 @@ const NavBar = () => {
                             <Link
                                 key={path}
                                 to={path}
-                                className={`hover:text-sky-500 relative ${isActive ? "text-sky-600 font-semibold" : ""
+                                className={`hover:text-sky-500 relative ${isActive ? "text-[#06acff] font-semibold" : ""
                                     }`}
                             >
                                 {formatPath(path)}
                                 {isActive && (
                                     <motion.span
                                         layoutId="underline"
-                                        className="absolute bottom-0 left-0 h-0.5 bg-sky-500 w-full"
+                                        className="absolute bottom-0 left-0 h-0.5 bg-[#06acff] w-full"
                                     />
                                 )}
                             </Link>
@@ -55,16 +58,13 @@ const NavBar = () => {
 
                 {/* Search & Logout icons (always visible) */}
                 <div className="flex items-center gap-4 text-gray-700">
-
-
                     {/* Profile icon - large screens only */}
-                    <Link to="/profile" className="hidden md:flex items-center gap-1 hover:text-sky-500">
+                    <Link to="/profile" className="hidden md:flex items-center gap-1 hover:text-[#06acff]">
                         <User size={18} />
                         <span className="text-sm hidden sm:inline">Profile</span>
                     </Link>
-
                     {/* Wishlist icon - large screens only */}
-                    <Link to="/wishlist" className="hidden md:flex items-center gap-1 hover:text-pink-500">
+                    <Link to="/wishlist" className="hidden md:flex items-center gap-1 hover:text-[#06acff]">
                         <Heart size={18} />
                         <span className="text-sm hidden sm:inline">Wishlist</span>
                     </Link>
@@ -72,7 +72,7 @@ const NavBar = () => {
                         className="hover:text-red-500 flex items-center gap-1"
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
-                        onClick={() => logoutOrg()}
+                        onClick={handlenavigate}
                     >
                         <LogOut size={18} />
                         <span className="text-sm ">Logout</span>

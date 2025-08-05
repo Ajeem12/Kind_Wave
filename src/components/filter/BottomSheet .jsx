@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { RxCross2 } from "react-icons/rx";
-import { FaArrowRight, FaCheck } from "react-icons/fa";
-import Select from "react-select";
+import { FaArrowRight } from "react-icons/fa";
 import FilterPanel from "./FilterPanel";
 import RegionPanel from "./RegionPanel";
 
@@ -92,12 +91,6 @@ const BottomSheet = ({ isOpen, onClose, selectedFilters, setSelectedFilters }) =
             }))
             : [];
 
-    const toggleOrgSelection = (org) => {
-        setSelectedOrgs((prev) =>
-            prev.includes(org) ? prev.filter((item) => item !== org) : [...prev, org]
-        );
-    };
-
     return (
         <AnimatePresence>
             {isOpen && (
@@ -119,6 +112,7 @@ const BottomSheet = ({ isOpen, onClose, selectedFilters, setSelectedFilters }) =
                         transition={{ type: "spring", stiffness: 300, damping: 30 }}
                         className="fixed bottom-0 left-0 w-full md:w-[50%] bg-white rounded-t-2xl shadow-xl z-70 p-4 px-6 md:left-[25%] max-h-[90vh] overflow-y-auto"
                         onClick={(e) => e.stopPropagation()}
+
                     >
                         {showOrgSelect || showOrgTypeSelect || showFieldSelect || showCommunitySelect || showSupportSelect || showRegionSelect ? (
                             <>
@@ -171,7 +165,7 @@ const BottomSheet = ({ isOpen, onClose, selectedFilters, setSelectedFilters }) =
                                     ].map((label) => (
                                         <li
                                             key={label}
-                                            className="flex justify-between items-center border-b border-gray-400 py-3 hover:bg-gray-50 px-2 cursor-pointer"
+                                            className="flex justify-between items-center border-b border-gray-300 py-3 hover:bg-gray-50 px-2 cursor-pointer"
                                             onClick={() => {
                                                 if (label === "Region") setShowRegionSelect(true);
                                                 if (label === "Organisations") setShowOrgSelect(true);
@@ -197,7 +191,6 @@ const BottomSheet = ({ isOpen, onClose, selectedFilters, setSelectedFilters }) =
                                         className="flex-1 py-3 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 transition"
                                         onClick={() => {
                                             setSelectedOrgs([]);
-                                            // Add other clear logic here
                                         }}
                                     >
                                         Clear All

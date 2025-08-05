@@ -9,7 +9,7 @@ const useOrgAuthStore = create(
       hasHydrated: false,
 
       loginOrg: (user, token) => {
-        const expiry = Date.now() + 60 * 60 * 1000;
+        const expiry = Date.now() + 10 * 24 * 60 * 60 * 1000;
         set({ orgUser: user, token, tokenExpiry: expiry });
       },
 

@@ -3,7 +3,7 @@ import React, { useState } from "react";
 
 const EventCard = ({ image, title, organizer, dateRange, description }) => {
     const [isLiked, setIsLiked] = useState()
-
+    const imgurl = import.meta.env.VITE_MEDIA_URL;
     const handleLike = (e) => {
         e.stopPropagation();
         setIsLiked(!isLiked);
@@ -15,9 +15,10 @@ const EventCard = ({ image, title, organizer, dateRange, description }) => {
                 {/* Top Image */}
                 <div className="relative w-full h-48 rounded-xl overflow-hidden">
                     <img
-                        src={image}
+                        src={`${imgurl}/events/${image}`}
                         alt={title}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover "
+                        loading="lazy"
                     />
                     <div className="absolute inset-0 bg-black/20"></div>
                 </div>
