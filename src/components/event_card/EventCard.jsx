@@ -1,12 +1,45 @@
 import { Heart } from "lucide-react";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
+import { addToWhishCart, getWhishCart } from "../../api/addToWhishCartApi"
+import useOrgAuthStore from "../../store/useOrgAuthStore";
 
-const EventCard = ({ image, title, organizer, dateRange, description }) => {
-    const [isLiked, setIsLiked] = useState()
+const EventCard = ({ id, image, title, organizer, dateRange, description }) => {
+    const token = useOrgAuthStore((state) => state.orgUser?.token);
+    const role = useOrgAuthStore((state) => state.orgUser?.role);
+    const queryClient = useQueryClient();
     const imgurl = import.meta.env.VITE_MEDIA_URL;
+
+    const { data: wishlistData } = useQuery({
+        queryKey: ['wishlist', token],
+        queryFn: () => getWhishCart(token),
+        enabled: !!token,
+    });
+
+    const [isLiked, setIsLiked] = useState(false);
+
+    useEffect(() => {
+        const isEventInWishlist = wishlistData?.data?.event?.some(item => item.event_id === id);
+        setIsLiked(isEventInWishlist || false);
+    }, [wishlistData, id]);
+
+    const addToWishlistMutation = useMutation({
+        mutationFn: () => addToWhishCart({ whish_cart_id: id, type: 1 }, token),
+        onSuccess: () => {
+            queryClient.invalidateQueries(['wishlist']);
+            setIsLiked(true);
+        },
+        onError: (error) => {
+            console.error("Error adding to wishlist:", error);
+        }
+    });
+
     const handleLike = (e) => {
         e.stopPropagation();
-        setIsLiked(!isLiked);
+        if (role === 1) return;
+        if (!isLiked) {
+            addToWishlistMutation.mutate();
+        }
     };
 
     return (
@@ -30,7 +63,6 @@ const EventCard = ({ image, title, organizer, dateRange, description }) => {
                         className={isLiked ? "text-white" : "text-[#6d6052]"}
                     />
                 </button>
-
             </div>
             {/* Card Content */}
             <div className="py-2 space-y-1">
@@ -40,7 +72,7 @@ const EventCard = ({ image, title, organizer, dateRange, description }) => {
                         <h3 className="font-bold text-sm text-black uppercase">{title}</h3>
                         <p className="text-xs text-gray-600">{organizer}</p>
                     </div>
-                    <p className="font-bold text-sm text-black whitespace-nowrap">{dateRange}</p>
+                    <p className="text-[10px] text-gray-700 whitespace-nowrap">{dateRange}</p>
                 </div>
                 {/* Description */}
                 <p className="text-xs text-gray-700">
@@ -52,5 +84,3 @@ const EventCard = ({ image, title, organizer, dateRange, description }) => {
 };
 
 export default EventCard;
-
-

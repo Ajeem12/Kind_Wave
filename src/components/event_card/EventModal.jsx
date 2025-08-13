@@ -2,9 +2,11 @@ import React, { useEffect, useState } from "react";
 import { RxCross1 } from "react-icons/rx";
 import useOrgAuthStore from "../../store/useOrgAuthStore";
 import { FiEdit2 } from "react-icons/fi";
+import { useLocation } from "react-router-dom";
 
 const EventModal = ({ isOpen, onEventModalClose, event, onVolunteer, onEdit }) => {
     const roles = useOrgAuthStore((state) => state.orgUser?.role);
+    const location = useLocation();
 
 
     const imgurl = import.meta.env.VITE_MEDIA_URL;
@@ -58,7 +60,14 @@ const EventModal = ({ isOpen, onEventModalClose, event, onVolunteer, onEdit }) =
                             <span className="text-xs text-gray-500 whitespace-nowrap">{formatDate(event.from_date)} to {formatDate(event.to_date)}</span>
                         </div>
 
-                        <p className="text-xs uppercase font-medium text-gray-500 mb-2">{event.organization_details.organization_name}</p>
+                        {event?.organization_details?.organization_name ? (
+                            <p className="text-xs uppercase font-medium text-gray-500 mb-2">{event?.organization_details?.organization_name}</p>
+                        ) : (
+                            <p className="text-xs uppercase font-medium text-gray-500 mb-2">{event?.organization_name}</p>
+                        )}
+
+
+
                         <p className="text-sm text-gray-700 mb-3">{event.long_desc}</p>
 
                         <div className="space-y-1 text-gray-700 text-xs">
@@ -73,7 +82,7 @@ const EventModal = ({ isOpen, onEventModalClose, event, onVolunteer, onEdit }) =
                         {roles === 1 ? (" ") : (<p className="mt-2 ml-1">Get Involved!</p>)}
                         {/* Actions */}
                         <div className="flex items-center justify-between gap-2">
-                            {roles === 1 ? (
+                            {roles === 1 && location.pathname !== "/" && (
                                 <button
                                     onClick={onEdit}
                                     className="bg-[#06acff] w-2/3 text-white px-4 py-2 rounded-lg"
@@ -81,12 +90,13 @@ const EventModal = ({ isOpen, onEventModalClose, event, onVolunteer, onEdit }) =
                                     <FiEdit2 className="inline mr-1" />
                                     Edit Event
                                 </button>
-                            ) : (
-                                <button onClick={onVolunteer} className=" text-white text-sm px-4 py-2 rounded-lg w-2/3 hover:bg-sky-500 transition">
+                            )}
+
+                            {roles === 2 && (
+                                <button onClick={onVolunteer} className=" text-white text-sm px-4 py-2 rounded-lg w-2/3 bg-[#06acff] transition">
                                     Volunteer
                                 </button>
                             )}
-
                             <button className="text-sm px-4 py-2 rounded-md w-1/3 shadow-sm transition">
                                 Donate
                             </button>

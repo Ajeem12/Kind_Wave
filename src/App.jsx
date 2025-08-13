@@ -5,6 +5,9 @@ import useOrgAuthStore from "./store/useOrgAuthStore"
 import { Loader2 } from 'lucide-react';
 
 
+
+
+
 const NotFound = lazy(() => import("./pages/404/NotFound"))
 const Landing = lazy(() => import("./pages/landing/Landing"))
 const Explore = lazy(() => import("./pages/explore/Explore"))
@@ -15,6 +18,9 @@ const Profile = lazy(() => import("./pages/profile/Profile"))
 const Layout = lazy(() => import("./layout/Layout"));
 const ProfilePage = lazy(() => import("./pages/profile/profile_page/ProfilePage"))
 const AddEvent = lazy(() => import("./components/addevent/AddEvent"));
+const ApplyVolDetails = lazy(() => import("./pages/applyVoldetails/ApplyVolDetails"))
+const UpdatePassword = lazy(() => import("./pages/updatepassword/UpdatePassword"))
+const OrgDetails = lazy(() => import("./pages/orgdetails/OrgDetails"))
 
 
 
@@ -31,6 +37,7 @@ const ProtectedRoute = ({ children }) => {
   if (!token || !isTokenValid()) {
     return <Navigate to="/landing" replace />;
   }
+
   return children;
 };
 
@@ -68,12 +75,24 @@ const router = createBrowserRouter([
       {
         path: "/profile-page",
         element: <ProfilePage />
+      },
+      {
+        path: "/add-event",
+        element: <AddEvent />
+      },
+      {
+        path: "/vol-details",
+        element: <ApplyVolDetails />
+      },
+      {
+        path: "/reset-password",
+        element: <UpdatePassword />
+      },
+      {
+        path: "/org-details",
+        element: <OrgDetails />
       }
     ],
-  },
-  {
-    path: "/add-event",
-    element: <AddEvent />
   },
   {
     path: "/landing",

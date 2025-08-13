@@ -4,9 +4,9 @@ const API = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
 });
 
-export const getAppliedVolunteer = async (token) => {
+export const appliedVolForOrg = async (token) => {
   try {
-    const response = await API.get("/applied_volunteer_list", {
+    const response = await API.get("/applied_volunteer_list_for_org", {
       headers: {
         Authorization: `Bearer ${token}`,
       },

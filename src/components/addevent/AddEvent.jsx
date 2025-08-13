@@ -52,6 +52,7 @@ const AddEvent = ({ onFormClose, eventToEdit }) => {
         to_date: eventToEdit?.to_date || '',
         image: eventToEdit?.image || null,
         status: eventToEdit?.status || '',
+        support: eventToEdit?.support || '',
         purpose: eventToEdit?.purpose || '',
         impact: eventToEdit?.impact || '',
         stack_holders: eventToEdit?.stack_holders || [],
@@ -67,7 +68,7 @@ const AddEvent = ({ onFormClose, eventToEdit }) => {
     const mutation = useMutation({
         mutationFn: (formData) => {
             const formDataToSend = new FormData();
-            console.log('identityProof:', formData.identityProof);
+            // console.log('identityProof:', formData.identityProof);
             Object.entries(formData).forEach(([key, value]) => {
                 if (value !== null && value !== undefined) {
                     if (value instanceof File) {
@@ -86,12 +87,12 @@ const AddEvent = ({ onFormClose, eventToEdit }) => {
         },
         onSuccess: () => {
             onFormClose();
-            alert(eventToEdit ? 'Event updated successfully' : 'Event added successfully');
+            swal(eventToEdit ? 'Event updated successfully' : 'Event added successfully');
 
         },
         onError: (error) => {
             console.error('Submission error:', error);
-            alert(error.message || 'Failed to submit application');
+            swal(error.message || 'Failed to submit application');
         }
 
     })
@@ -164,7 +165,7 @@ const AddEvent = ({ onFormClose, eventToEdit }) => {
                                 value={formData.short_desc}
                                 onChange={handleChange}
                                 className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                placeholder="Brief description"
+                                placeholder="short description"
                                 required
                             />
                         </div>
@@ -250,6 +251,21 @@ const AddEvent = ({ onFormClose, eventToEdit }) => {
                                 <option value="">Select Status</option>
                                 <option value={1}>Active</option>
                                 <option value={0}>Inactive</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Support *</label>
+                            <select
+                                name="support"
+                                value={formData.support}
+                                onChange={handleChange}
+                                className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                required
+                            >{ }
+                                <option value="">Select Status</option>
+                                <option value="donate">Donate</option>
+                                <option value="volunteer">Volunteer</option>
                             </select>
                         </div>
 

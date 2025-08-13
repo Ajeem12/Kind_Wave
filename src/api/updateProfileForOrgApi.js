@@ -4,16 +4,16 @@ const API = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
 });
 
-export const volApply = async (formData, token) => {
+export const updateProfileForOrg = async (formData, token) => {
   try {
-    const response = await API.post("/add_orgnization_journey", formData, {
+    const response = await API.post("/organization_update", formData, {
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "multipart/form-data",
       },
     });
 
-    console.log("Response:", response);
+    // console.log("Response:", response);
     return response.data;
   } catch (error) {
     console.error("Full error:", error);

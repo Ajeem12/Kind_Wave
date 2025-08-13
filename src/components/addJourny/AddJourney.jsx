@@ -4,6 +4,7 @@ import { addJourny } from "../../api/addJournyApi";
 import { editJourny } from "../../api/editJorneyApi";
 import { RxCross1 } from 'react-icons/rx';
 import useOrgAuthStore from "../../store/useOrgAuthStore";
+import swal from 'sweetalert';
 
 
 const AddJourney = ({ onJournyClose, journeyToEdit }) => {
@@ -29,11 +30,11 @@ const AddJourney = ({ onJournyClose, journeyToEdit }) => {
         },
         onSuccess: () => {
             onJournyClose();
-            alert(journeyToEdit ? 'Journey update successfully' : 'Journey saved successfully');
+            swal(journeyToEdit ? 'Journey update successfully' : 'Journey saved successfully');
         },
         onError: (error) => {
             console.error('Submission error:', error);
-            alert(error.message || 'Failed to add journey');
+            swal(error.message || 'Failed to add journey');
         }
     });
 

@@ -4,33 +4,54 @@ import useScreenSize from '../../utils/useScreenSize';
 import BottomSheet from '../../components/filter/BottomSheet ';
 import RecentApplications from '../../components/recentapplications/RecentApplications';
 import AllApplications from '../../components/allapplication/AllApplications';
+import { useQuery } from '@tanstack/react-query';
+import { getAppliedEventList } from "../../api/applyEventListApi"
+import { appliedVolForOrg } from "../../api/appliedVolListForOrgApi"
+import useOrgAuthStore from '../../store/useOrgAuthStore';
 
 const Application = () => {
     const [showAll, setShowAll] = useState(false);
     const screenWidth = useScreenSize();
     const [isFilterOpen, setIsFilterOpen] = useState(false);
+    const token = useOrgAuthStore((state) => state.orgUser?.token);
+    const role = useOrgAuthStore((state) => state.orgUser?.role);
+
+
+
+    const useGetAppliedEventList = (token) => {
+        return useQuery({
+            queryKey: ["appliedEventList", token],
+            queryFn: () => getAppliedEventList(token),
+            enabled: !!token,
+        })
+    }
+
+    const useGetAppliedVolForOrg = (token) => {
+        return useQuery({
+            queryKey: ["appliedVolForOrg", token],
+            queryFn: () => appliedVolForOrg(token),
+            enabled: !!token && role === 1,
+        });
+    };
+
+    const { data: volData, isLoading: volLoading, error: volError } = useGetAppliedVolForOrg(token);
+    const { data: eventData, isLoading: eventLoading, error: eventError } = useGetAppliedEventList(token);
+    const applications = role === 1 ? volData?.data || [] : eventData?.data || [];
+
+
+    const threeDaysAgo = new Date();
+    threeDaysAgo.setDate(threeDaysAgo.getDate() - 7);
+
+    const recentApplications = applications.filter(app => {
+        const updatedAt = new Date(app.updated_at);
+        return updatedAt >= threeDaysAgo;
+    });
 
     let itemsToShow = 2;
     if (screenWidth > 768) itemsToShow = 6;
     if (screenWidth > 1024) itemsToShow = 7;
 
-    const recentApplications = [
-        { id: 1, title: 'LITTLE HELPERS', organization: 'Cosmos Divas Rotary Club', date: '01-05-25 - 01-05-25', status: 'Draft', statusColor: 'text-gray-800' },
-        { id: 2, title: 'LITTLE HELPERS', organization: 'Cosmos Divas Rotary Club', date: '01-05-25 - 01-05-25', status: 'Submitted', statusColor: 'text-blue-800' },
-        { id: 3, title: 'LITTLE HELPERS', organization: 'Cosmos Divas Rotary Club', date: '01-05-25 - 01-05-25', status: 'Draft', statusColor: 'text-gray-800' },
-        { id: 4, title: 'LITTLE HELPERS', organization: 'Cosmos Divas Rotary Club', date: '01-05-25 - 01-05-25', status: 'Submitted', statusColor: 'text-blue-800' },
-    ];
-
-    const allApplications = [
-        { id: 1, title: 'LITTLE HELPERS', organization: 'Roots & Reach', date: '01-05-25 - 01-05-25', status: 'Pending', statusColor: 'text-yellow-600' },
-        { id: 2, title: 'LITTLE HELPERS', organization: 'Cosmos Divas Rotary Club', date: '01-05-25 - 01-05-25', status: 'Rejected', statusColor: 'text-red-800' },
-        { id: 3, title: 'LITTLE HELPERS', organization: 'Roots & Reach', date: '01-05-25 - 01-05-25', status: 'Accepted', statusColor: 'text-green-800' },
-        { id: 4, title: 'LITTLE HELPERS', organization: 'Cosmos Divas Rotary Club', date: '01-05-25 - 01-05-25', status: 'Rejected', statusColor: 'text-red-800' },
-        { id: 5, title: 'LITTLE HELPERS', organization: 'Roots & Reach', date: '01-05-25 - 01-05-25', status: 'Accepted', statusColor: 'text-green-800' },
-        { id: 6, title: 'LITTLE HELPERS', organization: 'Cosmos Divas Rotary Club', date: '01-05-25 - 01-05-25', status: 'Rejected', statusColor: 'text-red-800' },
-    ];
-
-    const displayedApplications = showAll ? allApplications : allApplications.slice(0, itemsToShow);
+    const displayedApplications = showAll ? applications : applications.slice(0, itemsToShow);
 
     return (
         <>

@@ -8,19 +8,15 @@ import RecentApplications from "../../components/recentapplications/RecentApplic
 import EventCard from "../../components/event_card/EventCard";
 import EventModal from "../../components/event_card/EventModal.jsx";
 import { useQuery } from '@tanstack/react-query';
+import { appliedVolForOrg } from "../../api/appliedVolListForOrgApi.js"
 import { getEventList } from "../../api/getEventListApi.js"
 import { getOrgProfile } from "../../api/getOrgProfileApi.js";
+import { orgVolList } from "../../api/orgVolListApi.js"
 import { getAppliedVolunteer } from "../../api/appliedVolunteerApi.js"
 import useOrgAuthStore from "../../store/useOrgAuthStore.js"
 import AddEvent from "../../components/addevent/AddEvent.jsx";
 import AddJourney from "../../components/addJourny/AddJourney.jsx";
 
-const members = [
-    { name: "Su Min", img: "https://randomuser.me/api/portraits/women/1.jpg" },
-    { name: "Kiara", img: "https://randomuser.me/api/portraits/women/2.jpg" },
-    { name: "Avyan", img: "https://randomuser.me/api/portraits/men/3.jpg" },
-    { name: "Jayesh", img: "https://randomuser.me/api/portraits/men/4.jpg" },
-];
 
 const StatsCard = ({ number, label }) => (
     <div className="flex flex-col items-center bg-white rounded-full w-20 h-20 justify-center shadow-md">
@@ -38,6 +34,7 @@ const ProfilePage = () => {
 
 
     const token = useOrgAuthStore((state) => state.orgUser?.token);
+    const role = useOrgAuthStore((state) => state.orgUser?.role);
     const useEventList = (token) => {
         return useQuery({
             queryKey: ["eventList", token],
@@ -54,6 +51,22 @@ const ProfilePage = () => {
         });
     };
 
+    const useOrgVolList = (token) => {
+        return useQuery({
+            queryKey: ["orgVolList", token],
+            queryFn: () => orgVolList(token),
+            enabled: !!token,
+        });
+    }
+
+    const useAppliedVolForOrg = (token) => {
+        return useQuery({
+            queryKey: ["appliedVolForOrg", token],
+            queryFn: () => appliedVolForOrg(token),
+            enabled: !!token,
+        });
+    }
+
     const useAppliedVolunteer = (token) => {
         return useQuery({
             queryKey: ["appliedVolunteer", token],
@@ -62,8 +75,26 @@ const ProfilePage = () => {
         });
     }
 
+    const { data: orgVolListData, isLoading: orgVolListLoading, error: orgVolListError } = useOrgVolList(token);
+
+    const volunteers = Array.isArray(orgVolListData) && orgVolListData.length > 0
+        ? orgVolListData[0].volunteers
+        : [];
+
+    console.log("Volunteers:", volunteers.length);
+
+
+
+    const { data: appliedVolForOrgData, isLoading: appliedVolForOrgLoading, error: appliedVolForOrgError } = useAppliedVolForOrg(token);
+    // console.log("List  ", appliedVolForOrgData?.data);
+
+
     const { data: appliedVolunteerData, isLoading: appliedVolunteerLoading, error: appliedVolunteerError } = useAppliedVolunteer(token);
-    console.log("Testing data: ", appliedVolunteerData);
+    const volunteer = appliedVolunteerData?.data
+    // console.log("Volunteer: ", volunteer);
+
+
+
 
 
     const { data: orgProfileData, isLoading: orgProfileLoading, error: orgProfileError } = useOrgProfile(token);
@@ -94,18 +125,12 @@ const ProfilePage = () => {
     };
 
 
-    const recentApplications = [
-        { id: 1, title: 'LITTLE HELPERS', organization: 'Cosmos Divas Rotary Club', date: '01-05-25 - 01-05-25', status: 'Draft', statusColor: 'text-gray-800' },
-        { id: 2, title: 'LITTLE HELPERS', organization: 'Cosmos Divas Rotary Club', date: '01-05-25 - 01-05-25', status: 'Submitted', statusColor: 'text-blue-800' },
-        { id: 3, title: 'LITTLE HELPERS', organization: 'Cosmos Divas Rotary Club', date: '01-05-25 - 01-05-25', status: 'Draft', statusColor: 'text-gray-800' },
-        { id: 4, title: 'LITTLE HELPERS', organization: 'Cosmos Divas Rotary Club', date: '01-05-25 - 01-05-25', status: 'Submitted', statusColor: 'text-blue-800' },
-    ];
-
     return (
         <>
             <div className="min-h-screen font-sans flex flex-col mb-20">
 
-                <Link to={"/profile-page"}>
+                <Link to={"/profile-page"}
+                    state={{ orgProfileData: orgProfileData?.data }}>
                     <FontAwesomeIcon
                         icon={faGear}
                         className="absolute top-20 right-4 text-black z-20"
@@ -128,19 +153,19 @@ const ProfilePage = () => {
                                 alt="Logo"
                                 className="w-24 h-24 md:w-32 md:h-32 mx-auto rounded-full bg-white p-2 shadow-lg"
                             />
-                            <h1 className="font-bold text-xl md:text-2xl text-white mt-3">ROOTS & REACH</h1>
+                            <h1 className="font-bold text-xl md:text-2xl text-white mt-3">{orgProfileData?.data?.organization_name}</h1>
                             <p className="text-white text-sm md:text-lg">Charity</p>
                         </div>
 
                         {/* Stats */}
                         <div className="absolute top-[57%] left-[8%]">
-                            <StatsCard number="40" label="Events" />
+                            <StatsCard number={eventData?.length} label="Events" />
                         </div>
                         <div className="absolute top-[65%] left-[40%]">
-                            <StatsCard number="100" label="Impact" />
+                            <StatsCard number="10" label="Impact" />
                         </div>
                         <div className="absolute top-[57%] right-[8%]">
-                            <StatsCard number="90" label="Volunteers" />
+                            <StatsCard number={volunteers.length} label="Volunteers" />
                         </div>
                     </div>
 
@@ -149,17 +174,18 @@ const ProfilePage = () => {
                         {/* Members */}
                         <div className="flex items-center justify-between mb-2 mt-6">
                             <h2 className="font-semibold text-sm md:text-lg">Members</h2>
-                            <FontAwesomeIcon icon={faPen} className="text-gray-600" size="md" />
+                            {role === 1 && (<FontAwesomeIcon icon={faPen} className="text-gray-600" size="md" />)}
                         </div>
                         <div className="flex gap-4 mb-6 overflow-x-auto">
-                            {members.map((member, idx) => (
+                            {volunteers.map((member, idx) => (
                                 <div key={idx} className="flex flex-col items-center text-xs md:text-base">
                                     <img
-                                        src={member.img}
-                                        alt={member.name}
+                                        src={"https://cdn-icons-png.flaticon.com/512/4128/4128176.png"}
+                                        alt={member.full_name}
                                         className="w-12 h-12 md:w-24 md:h-24 rounded-full object-cover"
+
                                     />
-                                    <span className="mt-1">{member.name}</span>
+                                    <span className="mt-1">{member.full_name}</span>
                                 </div>
                             ))}
                         </div>
@@ -167,7 +193,8 @@ const ProfilePage = () => {
                         {/* Journey Section */}
                         <div className="flex items-center justify-between mb-2 ">
                             <h2 className="font-semibold text-sm md:text-lg">Journey</h2>
-                            <FontAwesomeIcon onClick={() => setShowAddJourney(true)} icon={faPen} className="text-gray-600" size="md" />
+                            {role === 1 && (<FontAwesomeIcon onClick={() => setShowAddJourney(true)} icon={faPen} className="text-gray-600" size="md" />
+                            )}
                         </div>
                         <RecentApplications data={jurnyData} onJourneyClick={handleJourneyClick} />
 

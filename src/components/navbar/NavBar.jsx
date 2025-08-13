@@ -16,6 +16,7 @@ const NavBar = () => {
     const routes = ["/", "/organization", "/application"];
 
     const handlenavigate = () => {
+        logoutOrg();
         navigate("/landing")
     }
 

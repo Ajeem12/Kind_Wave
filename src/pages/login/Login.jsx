@@ -5,20 +5,20 @@ import { RxCross2 } from "react-icons/rx";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import swal from 'sweetalert';
 import { useMutation } from "@tanstack/react-query";
-import { login } from "../../api/authApi";
+import { login, volLogin } from "../../api/authApi";
 import useOrgAuthStore from "../../store/useOrgAuthStore";
 import { useNavigate } from "react-router-dom";
 
 const Login = ({ onClose, onSwitchToRegister, role }) => {
     const navigate = useNavigate()
-    const [email, setEmail] = useState("testingorg@mail.com");
-    const [password, setPassword] = useState("12345");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     // const [rememberMe, setRememberMe] = useState(false);
     const loginOrg = useOrgAuthStore((state) => state.loginOrg);
 
     const mutation = useMutation({
-        mutationFn: login,
+        mutationFn: role === "volunteer" ? volLogin : login,
         onSuccess: (data) => {
             loginOrg(data.data);
             swal("Success!", data.message || "Login successful!", "success");

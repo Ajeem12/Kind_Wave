@@ -1,30 +1,63 @@
 import { FaArrowRight, FaCamera, FaLock, FaPen, FaRegBell, FaSlidersH } from "react-icons/fa";
 import { MdEvent } from "react-icons/md";
 import { FiLogOut, FiMail, } from "react-icons/fi";
+import { getVolProfile } from "../../../api/volProfileApi";
 import useOrgAuthStore from "../../../store/useOrgAuthStore"
 import AddEvent from "../../../components/addevent/AddEvent";
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import UpdateProfile from "../../../components/updateProfileForOrg/UpdateProfie";
+import { useLocation, useNavigate } from "react-router-dom";
 
 
 const ProfilePage = () => {
+    const navigate = useNavigate();
+    const location = useLocation()
+    const orgProfileData = location.state?.orgProfileData;
+    const logoutOrg = useOrgAuthStore((state) => state.logoutOrg);
     const role = useOrgAuthStore((state) => state.orgUser?.role);
+    const token = useOrgAuthStore((state) => state.orgUser?.token);
     const [showAddEventModal, setShowAddEventModal] = useState(false);
-
+    const [showEditProfileModal, setShowEditProfileModal] = useState(false);
 
     const handleAddEventClick = () => {
         setShowAddEventModal(true);
     };
+
+    const handleUpdateProfile = () => {
+        setShowEditProfileModal(true);
+    };
+
+    const handleLogout = () => {
+        logoutOrg();
+    };
+
+    const handleResetPassword = () => {
+        navigate('/reset-password');
+    }
+
+    const useUserProfile = (token) => {
+        return useQuery({
+            queryKey: ["volProfile", token],
+            queryFn: () => getVolProfile(token),
+            enabled: !!token,
+        });
+    }
+
+    const { data: userProfileData, isLoading: userProfileLoading, error: userProfileError } = useUserProfile(token);
+    const userData = userProfileData?.data
 
 
     const profilePageItems = [
         { id: 1, text: 'Edit ProfilePage Photo', icon: <FaCamera />, completed: false },
         { id: 2, text: 'Edit ProfilePage Name', icon: <FaPen />, completed: true },
         { id: 3, text: 'Change Email Address', icon: <FiMail />, completed: false },
-        { id: 4, text: 'Change Password', icon: <FaLock />, completed: false },
+        { id: 4, text: 'Change Password', icon: <FaLock />, completed: false, onClick: handleResetPassword },
         { id: 5, text: 'Notifications', icon: <FaRegBell />, completed: false },
         { id: 6, text: 'Preferences', icon: <FaSlidersH />, completed: false },
-        { id: 7, text: 'Log Out', icon: <FiLogOut />, completed: false },
-        { id: 8, text: 'Add Event', icon: <MdEvent />, completed: false, onClick: handleAddEventClick },
+        { id: 7, text: 'Log Out', icon: <FiLogOut />, completed: false, onClick: handleLogout },
+        ...(role === 1 ? [{ id: 8, text: 'Add Event', icon: <MdEvent />, completed: false, onClick: handleAddEventClick }] : []),
+        ...(role === 1 ? [{ id: 9, text: 'Update Profile', icon: <FaPen />, completed: false, onClick: handleUpdateProfile }] : []),
     ];
 
     return (
@@ -46,7 +79,7 @@ const ProfilePage = () => {
                             className="w-20 h-20 rounded-full"
                         />
                     </div>
-                    <h1 className="mt-4 text-xl font-bold text-white tracking-wide">RHYTHM SINGHAL</h1>
+                    <h1 className="mt-4 text-xl font-bold text-white tracking-wide">{userData?.full_name}</h1>
                 </div>
 
                 {/* Options Section */}
@@ -68,6 +101,10 @@ const ProfilePage = () => {
             </div>
             {showAddEventModal && (
                 <AddEvent onFormClose={() => setShowAddEventModal(false)} />
+            )}
+
+            {showEditProfileModal && (
+                <UpdateProfile data={orgProfileData} onFormClose={() => setShowEditProfileModal(false)} />
             )}
         </div>
     );

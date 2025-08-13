@@ -2,13 +2,16 @@ import React, { useState } from "react";
 import { RxCross1 } from "react-icons/rx";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFileArrowUp } from "@fortawesome/free-solid-svg-icons";
-import { useMutation } from "@tanstack/react-query";
-import { volApply } from "../../api/volApply";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { volApply } from "../../api/volApplyApi";
 import useOrgAuthStore from "../../store/useOrgAuthStore"
+import { getVolEventList } from "../../api/getEventListApi";
+import swal from 'sweetalert';
 
 
 
-const ApplicationForm = ({ onFormClose }) => {
+const ApplicationForm = ({ onFormClose, event }) => {
+    const Id = event?.id;
     const [formData, setFormData] = useState({
         lastName: '',
         firstName: '',
@@ -21,10 +24,23 @@ const ApplicationForm = ({ onFormClose }) => {
         occupation: '',
         address: '',
         identityProof: null,
-        event: ''
     });
 
     const token = useOrgAuthStore((state) => state.orgUser?.token);
+
+    const useEventList = (token) => {
+        return useQuery({
+            queryKey: ["eventList", token],
+            queryFn: () => getVolEventList(token),
+            enabled: !!token,
+        });
+    };
+
+    const { data, isLoading, error } = useEventList(token);
+    const eventData = data?.data;
+    console.log(eventData);
+
+
 
     const mutation = useMutation({
         mutationFn: (formData) => {
@@ -32,7 +48,6 @@ const ApplicationForm = ({ onFormClose }) => {
             console.log('identityProof:', formData.identityProof);
             Object.entries(formData).forEach(([key, value]) => {
                 if (value !== null && value !== undefined) {
-                    // Special handling for files
                     if (value instanceof File) {
                         formDataToSend.append(key, value, value.name);
                     } else {
@@ -40,7 +55,9 @@ const ApplicationForm = ({ onFormClose }) => {
                     }
                 }
             });
-
+            if (Id) {
+                formDataToSend.append('event_id', Id);
+            }
             for (let [key, val] of formDataToSend.entries()) {
                 console.log(key, val);
             }
@@ -48,12 +65,12 @@ const ApplicationForm = ({ onFormClose }) => {
             return volApply(formDataToSend, token);
         },
         onSuccess: () => {
-            alert('Application submitted successfully!');
+            swal('Application submitted successfully!');
             onFormClose();
         },
         onError: (error) => {
             console.error('Submission error:', error);
-            alert(error.message || 'Failed to submit application');
+            swal(error.message || 'Failed to submit application');
         }
     });
 
@@ -122,6 +139,17 @@ const ApplicationForm = ({ onFormClose }) => {
                     </div>
 
                     <div className="flex flex-row gap-2 px-3">
+                        <select
+                            name="gender"
+                            value={formData.gender}
+                            onChange={handleChange}
+                            className="border border-gray-300 rounded-xl py-2 px-2 outline-none text-gray-500 w-1/3"
+                        >
+                            <option value="" disabled>Gender</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                            <option value="other">Other</option>
+                        </select>
                         <input
                             type="number"
                             placeholder="Age"
@@ -130,23 +158,11 @@ const ApplicationForm = ({ onFormClose }) => {
                             onChange={handleChange}
                             className="border border-gray-300 rounded-xl py-2 px-2 outline-none placeholder-gray-400 w-2/3"
                         />
-                        <select
-                            name="gender"
-                            value={formData.gender}
-                            onChange={handleChange}
-                            className="border border-gray-300 rounded-xl py-2 px-2 outline-none text-gray-500 w-1/3"
-                        >
-                            <option value="" disabled selected>Gender</option>
-                            <option value="male">Male</option>
-                            <option value="female">Female</option>
-                            <option value="other">Other</option>
-                        </select>
+
                     </div>
 
                     <div className="flex flex-col gap-3 px-3">
-
-
-                        <div className="relative">
+                        {/* <div className="relative">
                             <input
                                 type="date"
                                 id="dob-input"
@@ -165,7 +181,36 @@ const ApplicationForm = ({ onFormClose }) => {
                                         ? new Date(formData.dob).toLocaleDateString()
                                         : 'Date of Birth'}
                                 </span>
-                                {/* Optional calendar icon */}
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    className="h-5 w-5 text-gray-400"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                >
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                            </label>
+                        </div> */}
+                        <div className="relative">
+                            <input
+                                type="date"
+                                id="dob-input"
+                                name="dob"
+                                value={formData.dob}
+                                onChange={handleChange}
+                                className="absolute inset-0 w-full h-full cursor-pointer opacity-0 z-20"
+                            />
+                            <label
+                                htmlFor="dob-input"
+                                className={`border border-gray-300 rounded-xl py-2 px-3 outline-none flex items-center justify-between pointer-events-none ${formData.dob ? 'text-gray-800' : 'text-gray-500'
+                                    }`}
+                            >
+                                <span>
+                                    {formData.dob
+                                        ? new Date(formData.dob).toLocaleDateString()
+                                        : 'Date of Birth'}
+                                </span>
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
                                     className="h-5 w-5 text-gray-400"
@@ -177,6 +222,7 @@ const ApplicationForm = ({ onFormClose }) => {
                                 </svg>
                             </label>
                         </div>
+
                         <input
                             type="tel"
                             placeholder="Mobile No."
@@ -232,17 +278,19 @@ const ApplicationForm = ({ onFormClose }) => {
                                 </span>
                             </label>
                         </div>
-                        <select
+                        {/* <select
                             name="event"
                             value={formData.event}
                             onChange={handleChange}
                             className="border border-gray-300 rounded-xl py-2 px-3 outline-none text-gray-500"
                         >
-                            <option value="" disabled selected>Event</option>
-                            <option value="little helper">Little Helper</option>
-                            <option value="bright fai future">Bright Fair Future</option>
-                            <option value="magic minds">Magic Minds</option>
-                        </select>
+                            <option value="" disabled>Event</option>
+                            {eventData?.map((event) => (
+                                <option key={event.id} value={event.id}>
+                                    {event.title}
+                                </option>
+                            ))}
+                        </select> */}
                     </div>
 
                     {/* Buttons */}

@@ -2,10 +2,48 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { RxCross2 } from "react-icons/rx";
 import { FaArrowRight } from "react-icons/fa";
+import { getCounty, getCity } from "../../api/getCountry&CityApi";
+import { getOrgList } from "../../api/orgListApi"
+import { getFieldType } from "../../api/getFieldTypeApi"
+import { useQuery } from "@tanstack/react-query";
 import FilterPanel from "./FilterPanel";
 import RegionPanel from "./RegionPanel";
+import useOrgAuthStore from "../../store/useOrgAuthStore";
+import { getProgramRole } from "../../api/getProgramRoleApi";
+import { getStackHolderCom } from "../../api/stackHolderCommunityApi";
 
-const BottomSheet = ({ isOpen, onClose, selectedFilters, setSelectedFilters }) => {
+
+
+const useFieldType = () => {
+    return useQuery({
+        queryKey: ['fieldType'],
+        queryFn: getFieldType,
+    });
+};
+
+const useProgramRole = () => {
+    return useQuery({
+        queryKey: ['programRole'],
+        queryFn: getProgramRole,
+    });
+};
+
+
+const useStackHolderCom = () => {
+    return useQuery({
+        queryKey: ['stackHolderCom'],
+        queryFn: getStackHolderCom,
+    });
+};
+
+const useOrgList = () => {
+    return useQuery({
+        queryKey: ['orgList'],
+        queryFn: getOrgList,
+    });
+}
+
+const BottomSheet = ({ isOpen, onClose, selectedFilters, setSelectedFilters, handleSearch }) => {
     const [showOrgSelect, setShowOrgSelect] = useState(false);
     const [selectedOrgs, setSelectedOrgs] = useState([]);
     const [showOrgTypeSelect, setShowOrgTypeSelect] = useState(false);
@@ -20,76 +58,81 @@ const BottomSheet = ({ isOpen, onClose, selectedFilters, setSelectedFilters }) =
     const [selectedCountry, setSelectedCountry] = useState(null);
     const [selectedCity, setSelectedCity] = useState(null);
     const [regionSearch, setRegionSearch] = useState("");
+    const { data: fieldTypeData, } = useFieldType();
+    const { data: programRoleData, } = useProgramRole();
+    const { data: stackHolderComData, } = useStackHolderCom();
+    const { data: orgListData, } = useOrgList();
 
-    const organizations = [
-        "Aasheyein",
-        "Arials Foundation",
-        "Bemore",
-        "Bradys orphan",
-        "Cosmod Club",
-        "Cosmod Divas Raipur",
-        "khwabh",
-        "lets smile together",
-        "MICA's Mission",
-    ];
+
+
+
+
+
+
+
+    const { data: countryData = { data: [] } } = useQuery({
+        queryKey: ['country'],
+        queryFn: getCounty
+    });
+
+    const countries = countryData.data?.map(country => ({
+        value: country.id,
+        label: country.name
+    })) || [];
+
+    const { data: citiesData = { data: [] }, isLoading: isLoadingCities } = useQuery({
+        queryKey: ['cities', selectedCountry?.value],
+        queryFn: () => getCity(selectedCountry?.value),
+        enabled: !!selectedCountry?.value,
+    });
+
+    const cities = citiesData.data?.map(city => ({
+        value: city.id,
+        label: city.name
+    })) || [];
+
+
 
     const orgnizationType = [
-        "Community-Based Organizations (CBOs)",
-        "Corporate Social Responsibility (CSR)",
-        "Government Welfare Agencies",
-        "Fundraisers",
-        "Hybrid Models",
-        "International Aid",
-        "Mutual Aid Networks",
-        "Non-Governmental Organizations (NGO)",
-        "Nonprofits & Charities",
+        { id: 1, label: "Community-Based Organizations (CBOs)" },
+        { id: 2, label: "Corporate Social Responsibility (CSR)" },
+        { id: 3, label: "Government Welfare Agencies" },
+        { id: 4, label: "Fundraisers" },
+        { id: 5, label: "Hybrid Models" },
+        { id: 6, label: "International Aid" },
+        { id: 7, label: "Mutual Aid Networks" },
+        { id: 8, label: "Non-Governmental Organizations (NGO)" },
+        { id: 9, label: "Nonprofits & Charities" },
     ];
 
-    const fieldOptions = [
-        "Art",
-        "Education/Teaching",
-        "Food",
-        "Housing/Sheltar",
-        "Legal Aid",
-        "Medical/HealthCare",
-        "Mental Health",
-    ];
 
-    const communityOptions = [
-        "Children",
-        "Differently-abled",
-        "Elderly",
-        "Migrants & Refugees",
-        "Orphans",
-        "Veterans",
-        "Women",
-    ];
+    const organizations = orgListData?.data?.map((item) => ({
+        id: item.id,
+        label: item.organization_name
+    })) || [];
+
+    const fieldOptions = fieldTypeData?.data?.map((item) => ({
+        id: item.id,
+        label: item.title,
+    })) || [];
+
+
+
+    const communityOptions = stackHolderComData?.data?.map((item) => ({
+        id: item.id,
+        label: item.title,
+    })) || [];
 
     const supportOptions = ["Donation", "Volunteer"];
 
-    const countryCityData = {
-        India: ["Delhi", "Mumbai", "Bangalore", "Chennai"],
-        USA: ["New York", "Los Angeles", "Chicago", "Houston"],
-        UK: ["London", "Manchester", "Liverpool"],
-    };
 
-
-    const countryOptions = Object.keys(countryCityData).map((country) => ({
-        value: country,
-        label: country,
-    }));
-
-    const filteredCountryOptions = countryOptions.filter(option =>
+    const filteredCountryOptions = countries.filter(option =>
         option.label.toLowerCase().includes(regionSearch.toLowerCase())
     );
 
-    const cityOptions =
-        selectedCountry && countryCityData[selectedCountry.value]
-            ? countryCityData[selectedCountry.value].map(city => ({
-                value: city,
-                label: city,
-            }))
-            : [];
+
+    const cityOptions = cities;
+
 
     return (
         <AnimatePresence>
@@ -103,7 +146,6 @@ const BottomSheet = ({ isOpen, onClose, selectedFilters, setSelectedFilters }) =
                         className="fixed inset-0 modal-overlay z-40"
                         onClick={onClose}
                     />
-
                     {/* Bottom Sheet Panel */}
                     <motion.div
                         initial={{ y: "100%" }}
@@ -112,7 +154,6 @@ const BottomSheet = ({ isOpen, onClose, selectedFilters, setSelectedFilters }) =
                         transition={{ type: "spring", stiffness: 300, damping: 30 }}
                         className="fixed bottom-0 left-0 w-full md:w-[50%] bg-white rounded-t-2xl shadow-xl z-70 p-4 px-6 md:left-[25%] max-h-[90vh] overflow-y-auto"
                         onClick={(e) => e.stopPropagation()}
-
                     >
                         {showOrgSelect || showOrgTypeSelect || showFieldSelect || showCommunitySelect || showSupportSelect || showRegionSelect ? (
                             <>
@@ -211,13 +252,14 @@ const BottomSheet = ({ isOpen, onClose, selectedFilters, setSelectedFilters }) =
                                 options={organizations}
                                 selected={selectedOrgs}
                                 setSelected={setSelectedOrgs}
+                                handleSearch={handleSearch}
                                 onClose={() => setShowOrgSelect(false)}
                                 onApply={() => {
                                     setSelectedFilters(prev => ({
                                         ...prev,
                                         orgs: selectedOrgs,
                                     }));
-                                    setShowOrgSelect(false);
+                                    // setShowOrgSelect(false);
                                 }}
                             />
                         )}
@@ -228,13 +270,14 @@ const BottomSheet = ({ isOpen, onClose, selectedFilters, setSelectedFilters }) =
                                 options={orgnizationType}
                                 selected={selectedOrgTypes}
                                 setSelected={setSelectedOrgTypes}
+                                handleSearch={handleSearch}
                                 onClose={() => setShowOrgTypeSelect(false)}
                                 onApply={() => {
                                     setSelectedFilters(prev => ({
                                         ...prev,
                                         orgTypes: selectedOrgTypes,
                                     }));
-                                    setShowOrgTypeSelect(false);
+                                    // setShowOrgTypeSelect(false);
                                 }}
                             />
                         )}
@@ -245,13 +288,14 @@ const BottomSheet = ({ isOpen, onClose, selectedFilters, setSelectedFilters }) =
                                 options={fieldOptions}
                                 selected={selectedFields}
                                 setSelected={setSelectedFields}
+                                handleSearch={handleSearch}
                                 onClose={() => setShowFieldSelect(false)}
                                 onApply={() => {
                                     setSelectedFilters(prev => ({
                                         ...prev,
                                         fields: selectedFields,
                                     }));
-                                    setShowFieldSelect(false);
+                                    // setShowFieldSelect(false);
                                 }}
                             />
                         )}
@@ -261,13 +305,14 @@ const BottomSheet = ({ isOpen, onClose, selectedFilters, setSelectedFilters }) =
                                 options={communityOptions}
                                 selected={selectedCommunities}
                                 setSelected={setSelectedCommunities}
+                                handleSearch={handleSearch}
                                 onClose={() => setShowCommunitySelect(false)}
                                 onApply={() => {
                                     setSelectedFilters(prev => ({
                                         ...prev,
                                         communities: selectedCommunities,
                                     }));
-                                    setShowCommunitySelect(false);
+                                    // setShowCommunitySelect(false);
                                 }}
                             />
                         )}
@@ -278,13 +323,14 @@ const BottomSheet = ({ isOpen, onClose, selectedFilters, setSelectedFilters }) =
                                 options={supportOptions}
                                 selected={selectedSupports}
                                 setSelected={setSelectedSupports}
+                                handleSearch={handleSearch}
                                 onClose={() => setShowSupportSelect(false)}
                                 onApply={() => {
                                     setSelectedFilters(prev => ({
                                         ...prev,
                                         supports: selectedSupports,
                                     }));
-                                    setShowSupportSelect(false);
+                                    // setShowSupportSelect(false);
                                 }}
                             />
                         )}
@@ -292,17 +338,21 @@ const BottomSheet = ({ isOpen, onClose, selectedFilters, setSelectedFilters }) =
                             <RegionPanel
                                 filteredCountryOptions={filteredCountryOptions}
                                 selectedCountry={selectedCountry}
-                                setSelectedCountry={setSelectedCountry}
+                                setSelectedCountry={(country) => {
+                                    setSelectedCountry(country);
+                                    setSelectedCity(null);
+                                }}
                                 cityOptions={cityOptions}
                                 selectedCity={selectedCity}
                                 setSelectedCity={setSelectedCity}
+                                handleSearch={handleSearch}
                                 onClose={() => setShowRegionSelect(false)}
                                 onApply={() => {
                                     setSelectedFilters(prev => ({
                                         ...prev,
                                         region: selectedCity ? selectedCity.label : null,
                                     }));
-                                    setShowRegionSelect(false);
+                                    // setShowRegionSelect(false);
                                 }}
                                 regionSearch={regionSearch}
                                 setRegionSearch={setRegionSearch}
@@ -317,3 +367,5 @@ const BottomSheet = ({ isOpen, onClose, selectedFilters, setSelectedFilters }) =
 };
 
 export default BottomSheet;
+
+

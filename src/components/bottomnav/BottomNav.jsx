@@ -1,83 +1,4 @@
-// import React from 'react';
-// import { useLocation, useNavigate } from 'react-router-dom';
-// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-// import {
-//     faSearch,
-//     faUser as faSolidfaUser,
-// } from '@fortawesome/free-solid-svg-icons';
-// import { faHeart as faSolidHeart } from '@fortawesome/free-solid-svg-icons';
-// import { faHeart as faRegularHeart } from '@fortawesome/free-regular-svg-icons';
-// import { faNoteSticky as faSolidNoteSticky } from '@fortawesome/free-solid-svg-icons';
-// import { faNoteSticky as faRegularNoteSticky } from '@fortawesome/free-regular-svg-icons';
-// import { faUser as faRegularfaUser } from '@fortawesome/free-regular-svg-icons';
-// import { faHandsHoldingHeart } from '@fortawesome/free-solid-svg-icons';
 
-
-// const BottomNav = () => {
-//     const navigate = useNavigate();
-//     const location = useLocation();
-
-//     const navItems = [
-//         { icon: faSearch, label: 'Explore', path: '/' },
-//         { icon: faHandsHoldingHeart, label: 'Org', path: '/organization' },
-//         {
-//             icon: faRegularHeart,
-//             blueIcon: faSolidHeart,
-//             label: 'Wishlist',
-//             path: '/wishlist',
-//             isFontAwesome: true,
-//         },
-//         {
-//             icon: faRegularNoteSticky,
-//             blueIcon: faSolidNoteSticky,
-//             label: 'Application',
-//             path: '/application',
-//             isFontAwesome: true,
-//         },
-//         {
-//             icon: faRegularfaUser,
-//             blueIcon: faSolidfaUser,
-//             label: 'Profile',
-//             path: '/profile',
-//             isFontAwesome: true,
-//         },
-//     ];
-
-//     return (
-//         <div className="fixed bottom-0 left-0 right-0 bg-white shadow-lg border-t  md:hidden  z-50">
-//             <div className="flex justify-around items-center p-2">
-//                 {navItems.map((navItem) => {
-//                     const isActive = location.pathname === navItem.path;
-
-//                     return (
-//                         <button
-//                             key={navItem.path}
-//                             onClick={() => navigate(navItem.path)}
-//                             className={`flex flex-col items-center p-2 w-full ${isActive ? 'text-[#06acff]' : 'text-black'
-//                                 }`}
-//                         >
-//                             <FontAwesomeIcon
-//                                 icon={
-//                                     navItem.isFontAwesome && isActive
-//                                         ? navItem.blueIcon
-//                                         : navItem.icon
-//                                 }
-//                                 className={`text-xl ${isActive ? 'text-[#06acff]' : 'text-black'}`}
-//                             />
-//                             <span
-//                                 className={`text-xs mt-1 `}
-//                             >
-//                                 {navItem.label}
-//                             </span>
-//                         </button>
-//                     );
-//                 })}
-//             </div>
-//         </div>
-//     );
-// };
-
-// export default BottomNav;
 
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -93,10 +14,12 @@ import {
     faNoteSticky as faRegularNoteSticky,
     faUser as faRegularfaUser
 } from '@fortawesome/free-regular-svg-icons';
+import useOrgAuthStore from '../../store/useOrgAuthStore';
 
 const BottomNav = () => {
     const navigate = useNavigate();
     const location = useLocation();
+    const role = useOrgAuthStore((state) => state.orgUser?.role);
 
     const navItems = [
         {
@@ -131,7 +54,7 @@ const BottomNav = () => {
             icon: faRegularfaUser,
             blueIcon: faSolidfaUser,
             label: 'Profile',
-            path: '/profile'
+            path: role === 2 ? '/profile-page' : '/profile'
         }
     ];
 

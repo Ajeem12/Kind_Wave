@@ -20,7 +20,6 @@ const Landing = () => {
                 alt="Group Hug"
                 className="absolute inset-0 h-full w-full object-cover"
             />
-
             <div className="absolute inset-0 modal-overlay" />
 
             <div className="relative z-10 flex flex-col items-center justify-end h-full pb-20 px-4 text-start text-white">

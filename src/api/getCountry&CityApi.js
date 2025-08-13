@@ -4,13 +4,9 @@ const API = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
 });
 
-export const getEventList = async (token) => {
+export const getCounty = async () => {
   try {
-    const response = await API.get("/event_list_org", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await API.get("/get_countries");
     return response.data;
   } catch (error) {
     console.error("Registration failed:", error);
@@ -23,9 +19,9 @@ export const getEventList = async (token) => {
   }
 };
 
-export const getVolEventList = async () => {
+export const getCity = async (countryId) => {
   try {
-    const response = await API.get("/events_list");
+    const response = await API.get(`/get_cities/${countryId}`);
     return response.data;
   } catch (error) {
     console.error("Registration failed:", error);

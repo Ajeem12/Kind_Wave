@@ -2,23 +2,39 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { RxCross2 } from "react-icons/rx";
 import swal from 'sweetalert';
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { registerOrganization } from "../../api/orgRegApi"
-import Login from "../login/Login";
+import { getStackHolderCom } from "../../api/stackHolderCommunityApi";
+import { volReg } from "../../api/volRegApi";
+
 
 
 const RegisterModal = ({ onClose, role, onSwitchToLogin }) => {
-    const [organization_name, setName] = useState("");
+    const [name, setName] = useState("");
     const [categories, setCategories] = useState("")
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
+
+    const useStackHolderCom = () => {
+        return useQuery({
+            queryKey: ['stackHolderCom'],
+            queryFn: getStackHolderCom,
+        });
+    };
+
+    const { data, isLoading, isError, error } = useStackHolderCom();
+    const stackHolderCom = data?.data;
+
+
     const mutation = useMutation({
-        mutationFn: registerOrganization,
+        mutationFn: role === "volunteer" ? volReg : registerOrganization,
         onSuccess: (res) => {
             swal("Success!", "Registration successful!", "success");
             console.log(res);
+            onSwitchToLogin();
             onClose();
+
         },
         onError: (err) => {
             console.error(err);
@@ -35,11 +51,14 @@ const RegisterModal = ({ onClose, role, onSwitchToLogin }) => {
         },
     });
 
-
     const handleSubmit = (e) => {
         e.preventDefault();
-        mutation.mutate({ organization_name, email, password, categories });
+        const payload = role === "volunteer"
+            ? { full_name: name, email, password }
+            : { organization_name: name, email, password, categories };
+        mutation.mutate(payload);
     };
+
 
     return (
         <AnimatePresence>
@@ -81,19 +100,26 @@ const RegisterModal = ({ onClose, role, onSwitchToLogin }) => {
                         <input
                             type="text"
                             placeholder={`Enter ${role} Name`}
-                            value={organization_name}
+                            value={name}
                             onChange={(e) => setName(e.target.value)}
                             required
                             className="border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
-                        <input
-                            type="text"
-                            placeholder="Enter Category"
-                            value={categories}
-                            onChange={(e) => setCategories(e.target.value)}
-                            required
-                            className="border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        />
+                        {role === "organization" && (
+                            <select
+                                value={categories}
+                                onChange={(e) => setCategories(e.target.value)}
+                                required
+                                className="border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            >
+                                <option value="" disabled>Select Category</option>
+                                {stackHolderCom?.map((item) => (
+                                    <option key={item.id} value={item.id}>
+                                        {item.title}
+                                    </option>
+                                ))}
+                            </select>)}
+
 
                         <input
                             type="email"

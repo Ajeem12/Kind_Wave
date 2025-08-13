@@ -17,3 +17,18 @@ export const login = async (data) => {
     }
   }
 };
+
+export const volLogin = async (data) => {
+  try {
+    const response = await API.post("/volunteer_login", data);
+    return response.data;
+  } catch (error) {
+    console.error("Login failed:", error);
+
+    if (error.response && error.response.data) {
+      throw error.response.data;
+    } else {
+      throw { message: "Something went wrong. Please try again." };
+    }
+  }
+};

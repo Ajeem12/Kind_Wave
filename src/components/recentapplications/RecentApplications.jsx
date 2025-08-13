@@ -1,30 +1,63 @@
 import React from 'react';
 import useOrgAuthStore from '../../store/useOrgAuthStore';
+import { Link, useLocation } from 'react-router-dom';
 
+
+const formatDateToIndian = (dateString) => {
+    const date = new Date(dateString);
+    return `${String(date.getDate()).padStart(2, '0')}-${String(date.getMonth() + 1).padStart(2, '0')}-${date.getFullYear()}`;
+};
+
+const getStatusLabelAndColor = (status) => {
+    switch (status) {
+        case 0: return { label: 'Submited', color: 'text-[#06acff]' };
+        case 1: return { label: 'Viewed', color: 'text-violet-500' };
+        case 2: return { label: 'Accepted', color: 'text-green-500' };
+        case 3: return { label: 'Rejected', color: 'text-red-500' };
+        default: return { label: 'Unknown', color: 'text-gray-500' };
+    }
+};
 
 const RecentApplications = ({ data, onJourneyClick }) => {
-    const roles = useOrgAuthStore((state) => state.orgUser?.role);
+    const location = useLocation();
+
+
+
+    const role = useOrgAuthStore((state) => state.orgUser?.role);
+
     return (
         <div className="mb-4">
-            <div className="flex gap-4 overflow-x-auto scroll-smooth hide-scrollbar px-4 py-2">
-                {data?.map((app) => (
-                    <div
-                        key={app.id}
-                        onClick={() => onJourneyClick(app)}
-                        className="w-[180px] md:w-[265px] flex-shrink-0 rounded-lg p-3 shadow-md transition-shadow bg-white"
-                    >
-                        {roles === 1 ? (
-                            <p className="text-gray-600 text-xs md:text-base">{app.desc}</p>
-                        ) : (
-                            <p className="text-gray-600 text-xs md:text-base">{app.organization}</p>
-                        )}
-                        <h3 className="text-xs">{app.title}</h3>
-                        {roles === 1 ? (" ") : (<p className="text-gray-500 text-[11px] md:text-sm">Date: {app.date}</p>)}
-                        <span className={`text-[10px] md:text-sm rounded-full ${app.statusColor}`}>
-                            {app.status}
-                        </span>
-                    </div>
-                ))}
+            <div className="flex gap-2 overflow-x-auto hide-scrollbar scroll-smooth py-2 px-4">
+                {data?.map((app) => {
+                    const { label, color } = getStatusLabelAndColor(app.status);
+                    const isProfilePage = location.pathname === '/profile' && role === 1;
+                    const name = role === 1 ? app?.volunteer_details?.full_name : app?.event_details?.title;
+                    const desc = role === 1 ? app?.short_desc : app?.event_details?.organization_details?.organization_name;
+                    const date = role === 1 ? `${app.from_date} to ${app.to_date}` : `Date: ${formatDateToIndian(app.created_at)}`;
+
+                    return (
+                        <div
+                            key={app.id}
+                            onClick={() => onJourneyClick(app)}
+                            className="min-w-[160px] md:min-w-[200px] rounded-md shadow-md p-2 cursor-pointer hover:shadow-md transition"
+                        >
+                            {!isProfilePage && (
+                                <Link to="/vol-details">
+                                    <h3 className="text-xs font-semibold truncate">{name}</h3>
+                                    <p className="text-[11px] text-gray-600 truncate">{desc}</p>
+                                    <p className="text-[10px] text-gray-400">{date}</p>
+                                    <span className={`text-[10px] ${color}`}>{label}</span>
+                                </Link>
+                            )}
+                            {isProfilePage && (
+                                <>
+                                    <p className="text-[11px] text-gray-600">{app?.desc}</p>
+                                    <h3 className="text-xs font-semibold truncate">{app?.title}</h3>
+                                </>
+                            )}
+                        </div>
+                    );
+                })}
             </div>
         </div>
     );
