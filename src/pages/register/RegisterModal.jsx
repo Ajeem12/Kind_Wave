@@ -4,7 +4,8 @@ import { RxCross2 } from "react-icons/rx";
 import swal from 'sweetalert';
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { registerOrganization } from "../../api/orgRegApi"
-import { getStackHolderCom } from "../../api/stackHolderCommunityApi";
+
+import { getCategories } from "../../api/getCategoriesApi"
 import { volReg } from "../../api/volRegApi";
 
 
@@ -16,15 +17,15 @@ const RegisterModal = ({ onClose, role, onSwitchToLogin }) => {
     const [password, setPassword] = useState("");
 
 
-    const useStackHolderCom = () => {
+    const useCategories = () => {
         return useQuery({
-            queryKey: ['stackHolderCom'],
-            queryFn: getStackHolderCom,
+            queryKey: ['categories'],
+            queryFn: getCategories,
         });
     };
 
-    const { data, isLoading, isError, error } = useStackHolderCom();
-    const stackHolderCom = data?.data;
+    const { data, isLoading, isError, error } = useCategories();
+    const categorie = data?.data;
 
 
     const mutation = useMutation({
@@ -113,13 +114,12 @@ const RegisterModal = ({ onClose, role, onSwitchToLogin }) => {
                                 className="border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
                             >
                                 <option value="" disabled>Select Category</option>
-                                {stackHolderCom?.map((item) => (
+                                {categorie?.map((item) => (
                                     <option key={item.id} value={item.id}>
-                                        {item.title}
+                                        {item.category_name}
                                     </option>
                                 ))}
                             </select>)}
-
 
                         <input
                             type="email"

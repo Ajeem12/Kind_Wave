@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom";
 import useOrgAuthStore from "./store/useOrgAuthStore"
 import { Loader2 } from 'lucide-react';
+import Notification from './pages/notification/Notification';
 
 
 
@@ -21,7 +22,9 @@ const AddEvent = lazy(() => import("./components/addevent/AddEvent"));
 const ApplyVolDetails = lazy(() => import("./pages/applyVoldetails/ApplyVolDetails"))
 const UpdatePassword = lazy(() => import("./pages/updatepassword/UpdatePassword"))
 const OrgDetails = lazy(() => import("./pages/orgdetails/OrgDetails"))
-
+const EditProfilePhoto = lazy(() => import("./pages/edit_profile_page_photo/EditProfilePhoto"));
+const EditProfileName = lazy(() => import("./pages/edit_profile_name/EditProfileName"));
+const EditEmailAddress = lazy(() => import("./pages/edit_email/EditEmailAddress"));
 
 
 
@@ -81,7 +84,7 @@ const router = createBrowserRouter([
         element: <AddEvent />
       },
       {
-        path: "/vol-details",
+        path: "/vol-details/:id",
         element: <ApplyVolDetails />
       },
       {
@@ -91,6 +94,22 @@ const router = createBrowserRouter([
       {
         path: "/org-details",
         element: <OrgDetails />
+      },
+      {
+        path: "/edit-profile",
+        element: <EditProfilePhoto />
+      },
+      {
+        path: "/edit-profile-name",
+        element: <EditProfileName />
+      },
+      {
+        path: "/edit-email",
+        element: <EditEmailAddress />
+      },
+      {
+        path: "/notification",
+        element: <Notification />
       }
     ],
   },

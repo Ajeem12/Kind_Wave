@@ -20,9 +20,6 @@ const getStatusLabelAndColor = (status) => {
 
 const RecentApplications = ({ data, onJourneyClick }) => {
     const location = useLocation();
-
-
-
     const role = useOrgAuthStore((state) => state.orgUser?.role);
 
     return (
@@ -34,7 +31,7 @@ const RecentApplications = ({ data, onJourneyClick }) => {
                     const name = role === 1 ? app?.volunteer_details?.full_name : app?.event_details?.title;
                     const desc = role === 1 ? app?.short_desc : app?.event_details?.organization_details?.organization_name;
                     const date = role === 1 ? `${app.from_date} to ${app.to_date}` : `Date: ${formatDateToIndian(app.created_at)}`;
-
+                    const link = role === 1 ? `/vol-details/${app.volunteer_id}` : ``;
                     return (
                         <div
                             key={app.id}
@@ -42,7 +39,7 @@ const RecentApplications = ({ data, onJourneyClick }) => {
                             className="min-w-[160px] md:min-w-[200px] rounded-md shadow-md p-2 cursor-pointer hover:shadow-md transition"
                         >
                             {!isProfilePage && (
-                                <Link to="/vol-details">
+                                <Link to={link}>
                                     <h3 className="text-xs font-semibold truncate">{name}</h3>
                                     <p className="text-[11px] text-gray-600 truncate">{desc}</p>
                                     <p className="text-[10px] text-gray-400">{date}</p>
@@ -64,3 +61,5 @@ const RecentApplications = ({ data, onJourneyClick }) => {
 };
 
 export default RecentApplications;
+
+

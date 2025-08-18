@@ -160,7 +160,6 @@ const Org = () => {
                                     <p className='text-xs text-gray-400 ml-4'>{org?.category_details?.category_name}</p>
                                 </Link>
                             )}
-
                         </div>
                     ))}
                 </div>

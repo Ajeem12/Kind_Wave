@@ -3,16 +3,17 @@ import React, { useState } from 'react';
 const OrgDetails = () => {
     const [editMode, setEditMode] = useState(false);
     const [orgData, setOrgData] = useState({
-        name: 'Acme Corporation',
-        email: 'contact@acme.com',
-        phone: '+1 (555) 123-4567',
-        address: '123 Business Ave, Tech City, TC 10001',
-        website: 'www.acme.com',
-        description: 'Leading provider of innovative solutions since 1995. Specializing in enterprise software and consulting services.',
-        employees: 250,
-        industry: 'Technology',
-        founded: '1995'
+        name: 'Helping Hands Foundation',
+        email: 'support@helpinghands.org.in',
+        phone: '+91 98123 45678',
+        address: '12 Community Lane, Lajpat Nagar, New Delhi 110024, India',
+        website: 'www.helpinghands.org.in',
+        description: 'Non-profit organization dedicated to supporting underprivileged communities across India through education, healthcare, and skill development initiatives since 2008.',
+        employees: 35,
+        industry: 'Non-Governmental Organization (NGO)',
+        founded: '2008'
     });
+
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -29,16 +30,19 @@ const OrgDetails = () => {
         console.log('Organization data updated:', orgData);
     };
 
+
+
+
     return (
-        <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-md">
-            <div className="flex justify-between items-center mb-6">
+        <div className="max-w-4xl mx-auto p-6 mb-16">
+            <div className="flex justify-start items-center mb-6">
                 <h2 className="text-2xl font-bold text-gray-800">Organization Details</h2>
-                <button
+                {/* <button
                     onClick={() => setEditMode(!editMode)}
                     className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
                 >
                     {editMode ? 'Cancel' : 'Edit Details'}
-                </button>
+                </button> */}
             </div>
 
             {editMode ? (

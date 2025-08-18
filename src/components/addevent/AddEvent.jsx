@@ -264,8 +264,8 @@ const AddEvent = ({ onFormClose, eventToEdit }) => {
                                 required
                             >{ }
                                 <option value="">Select Status</option>
-                                <option value="donate">Donate</option>
-                                <option value="volunteer">Volunteer</option>
+                                <option value="Donate">Donate</option>
+                                <option value="Support">Support</option>
                             </select>
                         </div>
 

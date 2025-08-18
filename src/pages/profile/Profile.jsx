@@ -174,7 +174,7 @@ const ProfilePage = () => {
                         {/* Members */}
                         <div className="flex items-center justify-between mb-2 mt-6">
                             <h2 className="font-semibold text-sm md:text-lg">Members</h2>
-                            {role === 1 && (<FontAwesomeIcon icon={faPen} className="text-gray-600" size="md" />)}
+                            {/* {role === 1 && (<FontAwesomeIcon icon={faPen} className="text-gray-600" size="md" />)} */}
                         </div>
                         <div className="flex gap-4 mb-6 overflow-x-auto">
                             {volunteers.map((member, idx) => (
