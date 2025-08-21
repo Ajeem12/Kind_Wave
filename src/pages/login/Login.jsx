@@ -14,7 +14,6 @@ const Login = ({ onClose, onSwitchToRegister, role }) => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
-    // const [rememberMe, setRememberMe] = useState(false);
     const loginOrg = useOrgAuthStore((state) => state.loginOrg);
 
     const mutation = useMutation({
@@ -75,7 +74,7 @@ const Login = ({ onClose, onSwitchToRegister, role }) => {
                     animate={{ y: 0 }}
                     exit={{ y: "100%" }}
                     transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                    className="fixed bottom-0 left-0 w-full bg-white rounded-t-2xl shadow-xl z-50 p-6 md:max-w-md md:left-1/2 md:-translate-x-1/2 max-h-[90vh] overflow-y-auto"
+                    className="fixed bottom-0 left-0 w-full bg-white rounded-t-xl shadow-xl z-50 p-6 md:max-w-md md:left-1/2 md:-translate-x-1/2 max-h-[90vh] overflow-y-auto"
                     onClick={(e) => e.stopPropagation()}
                 >
                     {/* Close Icon */}
@@ -91,7 +90,7 @@ const Login = ({ onClose, onSwitchToRegister, role }) => {
 
                     {/* Title */}
                     <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">
-                        Login as {role}
+                        Login as {role.charAt(0).toUpperCase() + role.slice(1)}
                     </h2>
 
                     <form onSubmit={handleSubmit} className="flex flex-col gap-4 mb-6">
@@ -101,7 +100,7 @@ const Login = ({ onClose, onSwitchToRegister, role }) => {
                                 placeholder="Enter Email"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
-                                className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="w-full border-[0.5px] rounded-[10px] px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 required
                                 disabled={mutation.isPending}
                             />
@@ -113,7 +112,7 @@ const Login = ({ onClose, onSwitchToRegister, role }) => {
                                 placeholder="Enter Password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 pr-10"
+                                className="w-full border-[0.5px] rounded-[10px] px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 pr-10"
                                 required
                                 disabled={mutation.isPending}
                             />
@@ -146,7 +145,7 @@ const Login = ({ onClose, onSwitchToRegister, role }) => {
                         <button
                             type="submit"
                             disabled={mutation.isPending}
-                            className="bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition font-medium flex justify-center items-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+                            className="bg-[#00acff] text-white py-3 rounded-lg hover:bg-blue-700 transition font-medium flex justify-center items-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
                         >
                             {mutation.isPending ? (
                                 <>

@@ -137,7 +137,7 @@ const AddEvent = ({ onFormClose, eventToEdit }) => {
                 {/* Title */}
                 <div className="text-center mb-4">
                     <h2 className="text-xl font-semibold">Add New Event</h2>
-                    <p className="text-xs text-gray-500">ROOTS & REACH</p>
+
                 </div>
 
                 {/* Form */}
@@ -151,7 +151,7 @@ const AddEvent = ({ onFormClose, eventToEdit }) => {
                                 name="title"
                                 value={formData.title}
                                 onChange={handleChange}
-                                className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none "
                                 placeholder="Enter event title"
                                 required
                             />
@@ -164,7 +164,7 @@ const AddEvent = ({ onFormClose, eventToEdit }) => {
                                 name="short_desc"
                                 value={formData.short_desc}
                                 onChange={handleChange}
-                                className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none "
                                 placeholder="short description"
                                 required
                             />
@@ -179,7 +179,7 @@ const AddEvent = ({ onFormClose, eventToEdit }) => {
                             value={formData.long_desc}
                             onChange={handleChange}
                             rows={4}
-                            className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none "
                             placeholder="Detailed description"
                             required
                         ></textarea>
@@ -194,7 +194,7 @@ const AddEvent = ({ onFormClose, eventToEdit }) => {
                                 name="from_date"
                                 value={formData.from_date}
                                 onChange={handleChange}
-                                className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none "
                                 required
                             />
                         </div>
@@ -206,7 +206,7 @@ const AddEvent = ({ onFormClose, eventToEdit }) => {
                                 name="to_date"
                                 value={formData.to_date}
                                 onChange={handleChange}
-                                className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none "
                                 required
                             />
                         </div>
@@ -245,9 +245,9 @@ const AddEvent = ({ onFormClose, eventToEdit }) => {
                                 name="status"
                                 value={formData.status}
                                 onChange={handleChange}
-                                className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none "
                                 required
-                            >{ }
+                            >
                                 <option value="">Select Status</option>
                                 <option value={1}>Active</option>
                                 <option value={0}>Inactive</option>
@@ -260,9 +260,9 @@ const AddEvent = ({ onFormClose, eventToEdit }) => {
                                 name="support"
                                 value={formData.support}
                                 onChange={handleChange}
-                                className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none "
                                 required
-                            >{ }
+                            >
                                 <option value="">Select Status</option>
                                 <option value="Donate">Donate</option>
                                 <option value="Support">Support</option>
@@ -276,7 +276,7 @@ const AddEvent = ({ onFormClose, eventToEdit }) => {
                                 name="purpose"
                                 value={formData.purpose}
                                 onChange={handleChange}
-                                className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none "
                                 placeholder="Event purpose"
                                 required
                             />
@@ -289,7 +289,7 @@ const AddEvent = ({ onFormClose, eventToEdit }) => {
                                 name="impact"
                                 value={formData.impact}
                                 onChange={handleChange}
-                                className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none "
                                 placeholder="Impact"
                                 required
                             />
@@ -326,7 +326,7 @@ const AddEvent = ({ onFormClose, eventToEdit }) => {
                                 name="time"
                                 value={formData.time}
                                 onChange={handleChange}
-                                className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none "
                                 required
                             />
                         </div>
@@ -338,7 +338,7 @@ const AddEvent = ({ onFormClose, eventToEdit }) => {
                                 name="address"
                                 value={formData.address}
                                 onChange={handleChange}
-                                className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none "
                                 placeholder="Event address"
                                 required
                             />
@@ -368,7 +368,7 @@ const AddEvent = ({ onFormClose, eventToEdit }) => {
                         </button>
                         <button
                             type="submit"
-                            className="bg-[#06acff] w-2/3 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                            className="bg-[#00ACFF] rounded-[10px] text-white  shadow-[0_2px_4px_rgba(0,0,0,0.25)] px-5 py-2 active:scale-95"
                         >
                             {eventToEdit ? "Edit Event" : "Create Event"}
                         </button>

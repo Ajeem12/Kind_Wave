@@ -276,7 +276,7 @@ const ApplicationForm = ({ onFormClose, event }) => {
                             <button
                                 type="button"
                                 onClick={onFormClose}
-                                className="bg-gray-200 px-4 py-2 rounded-xl flex-1 hover:bg-gray-300 transition-colors"
+                                className="text-sm font-normal px-4 py-2 rounded-[10px] w-1/2  shadow-[0_2px_4px_rgba(0,0,0,0.25)]"
                                 disabled={isLoading}
                             >
                                 Cancel
@@ -284,8 +284,7 @@ const ApplicationForm = ({ onFormClose, event }) => {
                             <button
                                 type="submit"
                                 disabled={isLoading}
-                                className="bg-[#06acff] text-white px-4 py-2 rounded-xl flex-1 hover:bg-[#0595e0] transition-colors disabled:opacity-70"
-                            >
+                                className=" text-white text-sm w-1/2 font-normal px-4 py-2 rounded-[10px] bg-[#00acff]  shadow-[0_2px_4px_rgba(0,0,0,0.25)]" >
                                 {isLoading ? (
                                     <span className="flex items-center justify-center">
                                         <svg className="animate-spin h-4 w-4 mr-2" viewBox="0 0 24 24">

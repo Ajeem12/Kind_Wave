@@ -9,7 +9,7 @@ import { useLocation } from 'react-router-dom';
 const EditProfilePhoto = () => {
     const location = useLocation();
     const userData = location.state?.userData;
-    console.log("UserData", userData);
+
 
     const [photo, setPhoto] = useState(null);
     const [isEditing, setIsEditing] = useState(false);

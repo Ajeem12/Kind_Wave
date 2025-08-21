@@ -86,7 +86,7 @@ const UpdateProfile = ({ onFormClose, data }) => {
     };
 
     return (
-        <div className="fixed inset-0 modal-overlay flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 modal-overlay flex items-center justify-center z-60 p-4">
             <div className="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden">
                 <div className="flex justify-between items-center p-6 border-b border-gray-100">
                     <h2 className="text-xl font-semibold text-gray-800">Update Organization Profile</h2>
@@ -221,7 +221,7 @@ const UpdateProfile = ({ onFormClose, data }) => {
                         <button
                             type="submit"
                             disabled={mutation.isPending}
-                            className="px-5 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors disabled:opacity-70"
+                            className="bg-[#00ACFF] rounded-[10px] text-white  shadow-[0_2px_4px_rgba(0,0,0,0.25)] px-5 active:scale-95"
                         >
                             {mutation.isPending ? 'Updating...' : 'Update Profile'}
                         </button>

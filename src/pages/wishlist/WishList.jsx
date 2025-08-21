@@ -36,7 +36,7 @@ const WishList = () => {
     return (
         <div className="wishlist-container max-w-6xl mx-auto py-4">
             {/* Tabs */}
-            <div className=" bg-white border-b border-gray-200">
+            <div className=" bg-white shadow-[0_2px_4px_-2px_rgba(0,0,0,0.25)]">
                 <div className="flex flex-col items-center justify-center px-4">
                     <h1 className="text-lg font-bold text-gray-800  text-center">WISHLIST</h1>
                     <div className="flex justify-center items-center gap-26">

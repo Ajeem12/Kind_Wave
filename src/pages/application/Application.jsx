@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import useScreenSize from '../../utils/useScreenSize';
 import BottomSheet from '../../components/filter/BottomSheet ';

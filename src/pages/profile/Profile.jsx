@@ -16,21 +16,25 @@ import { getAppliedVolunteer } from "../../api/appliedVolunteerApi.js"
 import useOrgAuthStore from "../../store/useOrgAuthStore.js"
 import AddEvent from "../../components/addevent/AddEvent.jsx";
 import AddJourney from "../../components/addJourny/AddJourney.jsx";
+import AddMember from "../../components/addMember/AddMember.jsx";
 
 
 const StatsCard = ({ number, label }) => (
-    <div className="flex flex-col items-center bg-white rounded-full w-20 h-20 justify-center shadow-md">
+    <div className="flex flex-col items-center bg-white rounded-full w-[87px] h-[87px] justify-center shadow-md">
         <p className="text-lg font-bold">{number}</p>
         <p className="text-xs text-gray-600">{label}</p>
     </div>
 );
 
 const ProfilePage = () => {
+
     const [selectedEvent, setSelectedEvent] = useState(null);
     const [showAddJourney, setShowAddJourney] = useState(false);
     const [showEdit, setShowEdit] = useState(false);
     const [eventToEdit, setEventToEdit] = useState(null);
     const [journeyToEdit, setJourneyToEdit] = useState(null);
+    const [showAddMember, setShowAddMember] = useState(false);
+
 
 
     const token = useOrgAuthStore((state) => state.orgUser?.token);
@@ -81,20 +85,12 @@ const ProfilePage = () => {
         ? orgVolListData[0].volunteers
         : [];
 
-    console.log("Volunteers:", volunteers.length);
-
-
 
     const { data: appliedVolForOrgData, isLoading: appliedVolForOrgLoading, error: appliedVolForOrgError } = useAppliedVolForOrg(token);
-    // console.log("List  ", appliedVolForOrgData?.data);
 
 
     const { data: appliedVolunteerData, isLoading: appliedVolunteerLoading, error: appliedVolunteerError } = useAppliedVolunteer(token);
     const volunteer = appliedVolunteerData?.data
-    // console.log("Volunteer: ", volunteer);
-
-
-
 
 
     const { data: orgProfileData, isLoading: orgProfileLoading, error: orgProfileError } = useOrgProfile(token);
@@ -124,10 +120,17 @@ const ProfilePage = () => {
         setSelectedEvent(null);
     };
 
+    const [showAll, setShowAll] = useState(false);
+
+    const visibleEvents = eventData ? (showAll ? eventData : eventData.slice(0, 2)) : [];
+    const ImgUrl = import.meta.env.VITE_MEDIA_URL;
+
+
+
 
     return (
         <>
-            <div className="min-h-screen font-sans flex flex-col mb-20">
+            <div className="min-h-screen flex flex-col mb-20">
 
                 <Link to={"/profile-page"}
                     state={{ orgProfileData: orgProfileData?.data }}>
@@ -144,28 +147,27 @@ const ProfilePage = () => {
 
                     <div className="relative h-96 overflow-hidden">
                         {/* Half circle background - absolutely positioned within its container */}
-                        <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-[500px]  h-[300px] bg-gradient-to-b from-[#49A6d3] to-[#81d0ee] rounded-b-full"></div>
-
+                        <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-[550px]  h-[330px] bg-gradient-to-b from-[#49a6d3] to-[#81d0ee] rounded-b-full"></div>
                         {/* Profile Content */}
                         <div className="relative z-10 pt-12 text-center">
                             <img
-                                src="/img/s6.png"
+                                src={`${ImgUrl}/organization/${orgProfileData?.data?.photo}`}
                                 alt="Logo"
-                                className="w-24 h-24 md:w-32 md:h-32 mx-auto rounded-full bg-white p-2 shadow-lg"
+                                className="w-36 h-36 md:w-32 md:h-32 mx-auto rounded-full bg-white p-1 shadow-lg"
                             />
-                            <h1 className="font-bold text-xl md:text-2xl text-white mt-3">{orgProfileData?.data?.organization_name}</h1>
-                            <p className="text-white text-sm md:text-lg">Charity</p>
+                            <h1 className="font-bold text-lg md:text-2xl  mt-3">{orgProfileData?.data?.organization_name}</h1>
+                            <p className="text-sm md:text-lg mb-3">Charity</p>
                         </div>
 
                         {/* Stats */}
-                        <div className="absolute top-[57%] left-[8%]">
+                        <div className="absolute top-[68%] left-[8%]">
                             <StatsCard number={eventData?.length} label="Events" />
                         </div>
-                        <div className="absolute top-[65%] left-[40%]">
+                        <div className="absolute top-[75%] left-[40%]">
                             <StatsCard number="10" label="Impact" />
                         </div>
-                        <div className="absolute top-[57%] right-[8%]">
-                            <StatsCard number={volunteers.length} label="Volunteers" />
+                        <div className="absolute top-[68%] right-[7%]">
+                            <StatsCard number={volunteers?.length} label="Volunteers" />
                         </div>
                     </div>
 
@@ -173,8 +175,8 @@ const ProfilePage = () => {
                     <div className="px-6 pb-10">
                         {/* Members */}
                         <div className="flex items-center justify-between mb-2 mt-6">
-                            <h2 className="font-semibold text-sm md:text-lg">Members</h2>
-                            {/* {role === 1 && (<FontAwesomeIcon icon={faPen} className="text-gray-600" size="md" />)} */}
+                            <h2 className="text-sm  md:text-lg">Members</h2>
+                            {role === 1 && (<FontAwesomeIcon icon={faPen} onClick={() => setShowAddMember(true)} className="text-gray-600" size="sm" />)}
                         </div>
                         <div className="flex gap-4 mb-6 overflow-x-auto">
                             {volunteers.map((member, idx) => (
@@ -183,7 +185,6 @@ const ProfilePage = () => {
                                         src={"https://cdn-icons-png.flaticon.com/512/4128/4128176.png"}
                                         alt={member.full_name}
                                         className="w-12 h-12 md:w-24 md:h-24 rounded-full object-cover"
-
                                     />
                                     <span className="mt-1">{member.full_name}</span>
                                 </div>
@@ -192,31 +193,35 @@ const ProfilePage = () => {
 
                         {/* Journey Section */}
                         <div className="flex items-center justify-between mb-2 ">
-                            <h2 className="font-semibold text-sm md:text-lg">Journey</h2>
-                            {role === 1 && (<FontAwesomeIcon onClick={() => setShowAddJourney(true)} icon={faPen} className="text-gray-600" size="md" />
+                            <h2 className="text-sm md:text-lg">Journey</h2>
+                            {role === 1 && (<FontAwesomeIcon onClick={() => setShowAddJourney(true)} icon={faPen} className="text-gray-600" size="sm" />
                             )}
                         </div>
                         <RecentApplications data={jurnyData} onJourneyClick={handleJourneyClick} />
 
                         <div className="flex items-center justify-between mb-2">
                             <h2 className="text-sm text-gray-700">Event</h2>
-                            <h2 className="text-sm text-gray-700">See more</h2>
+                            <button
+                                onClick={() => setShowAll(!showAll)}
+                                className="text-sm text-gray-700"
+                            >
+                                {showAll ? "See less" : "See more"}
+                            </button>
                         </div>
-
-
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-20">
-                            {eventData?.map((event) => (
+                        <>
+                            {visibleEvents?.map((event) => (
                                 <div key={event.id} onClick={() => handleCardClick(event)}>
                                     <EventCard
+                                        id={event.id}
                                         image={event.image}
                                         title={event.title}
-                                        organizer={event.organization_details.organization_name}
-                                        dateRange={event.dateRange}
+                                        organizer={event.organization_details?.organization_name}
+                                        dateRange={`${event?.from_date} - ${event?.to_date}`}
                                         description={event.long_desc}
                                     />
                                 </div>
                             ))}
-                        </div>
+                        </>
                     </div>
                 </main>
             </div>
@@ -237,15 +242,16 @@ const ProfilePage = () => {
                     eventToEdit={eventToEdit}
                 />
             )}
-
             {showAddJourney && (
                 <AddJourney onJournyClose={() => {
                     setShowAddJourney(false);
                     setJourneyToEdit(null);
                 }}
                     journeyToEdit={journeyToEdit}
-
                 />
+            )}
+            {showAddMember && (
+                <AddMember onMemberClose={() => setShowAddMember(false)} />
             )}
         </>
     );

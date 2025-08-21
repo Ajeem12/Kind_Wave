@@ -4,6 +4,15 @@
   background-color: rgba(0, 0, 0, 0.2);
 }
 
+.img-overlay {
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0) 0%,
+    #5a5a5a 80%,
+    #000000 100%
+  );
+}
+
 .hide-scrollbar {
   scrollbar-width: none;
   -ms-overflow-style: none;
@@ -14,21 +23,36 @@
 
 @font-face {
   font-family: "Whitney";
-  src: url("/font/whitneybook.otf") format("opentype");
+  src: url("/public/font/whitneybook.otf") format("opentype");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
 
-/* For bold variant (if you have it) */
-/* @font-face {
+@font-face {
   font-family: "Whitney";
-  src: url("/font/whitney/whitneybold.otf") format("opentype");
-  font-weight: 700;
-  font-style: normal;
+  src: url("/public/font/whitneymedium.otf") format("opentype");
+  font-weight: 500;
+  font-style: medium;
   font-display: swap;
-} */
+}
+
+@font-face {
+  font-family: "Whitney";
+  src: url("/public/font/whitneysemibold.otf") format("opentype");
+  font-weight: 600;
+  font-style: semibold;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Whitney";
+  src: url("/public/font/whitneybold.otf") format("opentype");
+  font-weight: 700;
+  font-style: bold;
+  font-display: swap;
+}
 
 body {
-  font-family: "Whitney", Arial, sans-serif;
+  font-family: "Whitney";
 }

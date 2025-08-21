@@ -3,8 +3,10 @@ import React, { useState, useEffect } from "react";
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 import { addToWhishCart, getWhishCart } from "../../api/addToWhishCartApi"
 import useOrgAuthStore from "../../store/useOrgAuthStore";
+import { useLocation } from "react-router-dom";
 
 const EventCard = ({ id, image, title, organizer, dateRange, description }) => {
+    const location = useLocation();
     const token = useOrgAuthStore((state) => state.orgUser?.token);
     const role = useOrgAuthStore((state) => state.orgUser?.role);
     const queryClient = useQueryClient();
@@ -42,6 +44,16 @@ const EventCard = ({ id, image, title, organizer, dateRange, description }) => {
         }
     };
 
+    const formatDateRange = (range) => {
+        if (!range) return "";
+        const [start, end] = range.split(" - ");
+        const formatDate = (d) =>
+            new Date(d).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+        return `${formatDate(start)} - ${formatDate(end)}`;
+    };
+
+
+
     return (
         <div className="bg-white overflow-hidden max-w-sm">
             <div className="relative w-full h-48">
@@ -65,14 +77,17 @@ const EventCard = ({ id, image, title, organizer, dateRange, description }) => {
                 </button>
             </div>
             {/* Card Content */}
-            <div className="py-2 space-y-1">
+            <div className="py-2 space-y-1 p-2">
                 {/* Title and Date */}
                 <div className="flex justify-between items-start">
                     <div>
-                        <h3 className="font-bold text-sm text-black uppercase">{title}</h3>
-                        <p className="text-xs text-gray-600">{organizer}</p>
+                        <h3 className="font-semibold text-base uppercase">{title}</h3>
+                        <p className="text-sm font-medium">{organizer}</p>
                     </div>
-                    <p className="text-[10px] text-gray-700 whitespace-nowrap">{dateRange}</p>
+
+                    <p className="font-semibold text-sm whitespace-nowrap">
+                        {formatDateRange(dateRange)}
+                    </p>
                 </div>
                 {/* Description */}
                 <p className="text-xs text-gray-700">

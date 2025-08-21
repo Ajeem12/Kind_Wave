@@ -92,12 +92,8 @@ const Org = () => {
                             {role === 2 ? (
                                 <Link to="/org-details">
                                     <div
-                                        className={`relative p-4 rounded-lg flex flex-col items-center justify-center 
-                  hover:bg-gray-50 transition-colors duration-200 h-[150px] w-[100%]
-                  ${index % 2 === 0
-                                                ? "shadow-[2px_2px_4px_rgba(0,0,0,0.1)] "
-                                                : "shadow-[-2px_2px_4px_rgba(0,0,0,0.1)]"}`}
-                                    >
+                                        className={`relative p-4 rounded-[10px] flex flex-col items-center justify-center 
+                  hover:bg-gray-50 transition-colors duration-200 h-[150px] w-[100%]  shadow-[0_2px_4px_rgba(0,0,0,0.25)]`}>
                                         <div className="h-40 w-44 md:h-40 mb-2 flex items-center justify-center">
                                             <img
                                                 src={`${imgurl}/organization/${org?.photo}`}

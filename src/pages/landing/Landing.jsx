@@ -20,19 +20,20 @@ const Landing = () => {
                 alt="Group Hug"
                 className="absolute inset-0 h-full w-full object-cover"
             />
-            <div className="absolute inset-0 modal-overlay" />
+            <div className="absolute inset-0 img-overlay" />
 
-            <div className="relative z-10 flex flex-col items-center justify-end h-full pb-20 px-4 text-start text-white">
-                <h1 className="text-2xl font-semibold mb-2">Make a Difference Anytime, Anywhere.</h1>
-                <p className="text-sm text-gray-200 mb-6">
+            <div className="relative z-10 flex flex-col items-center justify-end h-full pb-20 px-5 text-start text-white ">
+                <h1 className="w-full text-xl font-semibold mb-2 text-left">
+                    Make a Difference <br /> Anytime, Anywhere.
+                </h1>
+                <p className=" w-full text-sm text-gray-200 mb-6 text-left">
                     Explore causes, lend a hand to spark change with every action!
                 </p>
-
-                <div className="flex flex-col gap-4 w-full max-w-xs">
-                    <button onClick={() => openModal("volunteer")} className="border border-white py-2 rounded-md hover:bg-white hover:text-black transition">
+                <div className="flex flex-col gap-4 w-full ">
+                    <button onClick={() => openModal("volunteer")} className="border border-white py-2 rounded-[10px] hover:bg-white hover:text-black transition">
                         Volunteer
                     </button>
-                    <button onClick={() => openModal("organization")} className="border border-white py-2 rounded-md hover:bg-white hover:text-black transition">
+                    <button onClick={() => openModal("organization")} className="border border-white py-2 rounded-[10px] hover:bg-white hover:text-black transition">
                         Organisation
                     </button>
                 </div>

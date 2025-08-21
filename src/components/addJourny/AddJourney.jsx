@@ -125,7 +125,7 @@ const AddJourney = ({ onJournyClose, journeyToEdit }) => {
                         <button
                             type="submit"
                             disabled={mutation.isPending}
-                            className="px-5 py-2 text-sm font-medium text-white bg-[#06acff] rounded-lg transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
+                            className="bg-[#00ACFF] rounded-[10px] text-white  shadow-[0_2px_4px_rgba(0,0,0,0.25)] px-5"
                         >
                             {journeyToEdit ? 'Update Journey' : 'Add Journey'}
                         </button>

@@ -25,6 +25,7 @@ const OrgDetails = lazy(() => import("./pages/orgdetails/OrgDetails"))
 const EditProfilePhoto = lazy(() => import("./pages/edit_profile_page_photo/EditProfilePhoto"));
 const EditProfileName = lazy(() => import("./pages/edit_profile_name/EditProfileName"));
 const EditEmailAddress = lazy(() => import("./pages/edit_email/EditEmailAddress"));
+const VolProfile = lazy(() => import("./pages/volProfile/VolProfile"))
 
 
 
@@ -110,7 +111,11 @@ const router = createBrowserRouter([
       {
         path: "/notification",
         element: <Notification />
-      }
+      },
+      {
+        path: "/update-profile",
+        element: <VolProfile />
+      },
     ],
   },
   {

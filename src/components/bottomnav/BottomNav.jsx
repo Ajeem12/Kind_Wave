@@ -1,5 +1,3 @@
-
-
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -59,8 +57,8 @@ const BottomNav = () => {
     ];
 
     return (
-        <div className="fixed bottom-0 left-0 right-0 bg-white shadow-lg border-t md:hidden z-50">
-            <div className="flex justify-around items-center">
+        <div className="fixed bottom-0 left-0 right-0 bg-white border-t-[0.5px]  md:hidden z-50">
+            <div className="flex justify-around items-center px-2">
                 {navItems.map((item) => {
                     const isActive = location.pathname === item.path;
 
@@ -68,7 +66,7 @@ const BottomNav = () => {
                         <button
                             key={item.path}
                             onClick={() => navigate(item.path)}
-                            className={`flex flex-col items-center p-2 w-full ${isActive ? 'text-[#06acff]' : 'text-black'}`}
+                            className={`flex flex-col items-center font-medium p-2 w-full ${isActive ? 'text-[#00acff]' : ''}`}
                         >
                             {item.type === 'image' ? (
                                 <img

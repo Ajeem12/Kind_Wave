@@ -14,13 +14,13 @@ const formatDateToIndian = (dateString) => {
 const getStatusLabelAndColor = (status) => {
     switch (status) {
         case 0:
-            return { label: 'Submitted', color: 'text-[#06acff]' };
+            return { label: 'Submitted', color: 'text-[#00acff]' };
         case 1:
             return { label: 'Viewed', color: 'text-violet-500' };
         case 2:
-            return { label: 'Accepted', color: 'text-green-500' };
+            return { label: 'Accepted', color: 'text-[#00b92e]' };
         case 3:
-            return { label: 'Rejected', color: 'text-red-500' };
+            return { label: 'Rejected', color: 'text-[#ff0000]' };
         default:
             return { label: 'Unknown', color: 'text-gray-500' };
     }
@@ -53,15 +53,15 @@ const AllApplications = ({
                     const applicationCard = (
                         <div
                             key={app.id}
-                            className="rounded-lg p-3 shadow-md transition-all cursor-pointer hover:shadow-lg"
+                            className="rounded-[10px] p-3 shadow-[0_4px_4.2px_rgba(0,0,0,0.25)] transition-all cursor-pointer"
                         >
                             {role === 1 ? (
-                                <h3 className="text-xs">{app.volunteer_details?.full_name}</h3>
+                                <h3 className="text-sm font-medium">{app.volunteer_details?.full_name}</h3>
                             ) : (
-                                <h3 className="text-xs">{app.event_details?.title}</h3>
+                                <h3 className="text-sm font-medium">{app.event_details?.title}</h3>
                             )}
                             {role === 1 ? (
-                                <p className="text-gray-600 text-xs md:text-base">{app.short_desc}</p>
+                                <p className="text-gray-600 text-xs font-normal md:text-base">{app.short_desc}</p>
                             ) : (
                                 <p className="text-gray-600 text-xs md:text-base">
                                     {app?.event_details?.organization_details?.organization_name}

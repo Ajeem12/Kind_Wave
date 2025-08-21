@@ -112,13 +112,9 @@ const SearchBar = ({ onSearchResults }) => {
     };
 
 
-
-
-
-
     return (
         <>
-            <div className="sticky top-15 md:top-[76px] z-10 px-6 p-4 bg-white/90 backdrop-blur-sm  border-b border-gray-300 drop-shadow-sm">
+            <div className="sticky top-15 md:top-[76px] z-10 px-6 p-4 bg-white/90 backdrop-blur-sm   shadow-[0_2px_4px_rgba(0,0,0,0.25)]">
                 {/* Search Input */}
                 <div className="relative flex items-center text-sm">
                     <input
@@ -126,7 +122,7 @@ const SearchBar = ({ onSearchResults }) => {
                         value={searchText}
                         onChange={(e) => setSearchText(e.target.value)}
                         placeholder="Search for events, and organizations."
-                        className="w-full py-3 pl-10 pr-12 text-gray-700 bg-white border border-gray-400 rounded-lg outline-none "
+                        className="w-full py-3 pl-10 pr-12 bg-white border-[0.5px] border-gray-400 rounded-[10px] outline-none "
                     />
                     <FiSearch onClick={handleSearch} className="absolute left-3 text-gray-500" size={20} />
                     <button
@@ -142,12 +138,10 @@ const SearchBar = ({ onSearchResults }) => {
                     {tags.map((tag) => {
                         const isObject = typeof tag === 'object';
                         const tagText = isObject ? tag.label : tag;
-                        // const tagKey = isObject ? `obj-${tag.id}` : `str-${tag}`;
-
                         return (
                             <span
                                 // key={tagKey}
-                                className="px-3 py-1 text-[8px] text-gray-700 bg-gray-50/30 rounded-full border border-gray-200/50 flex items-center gap-1 backdrop-blur-sm"
+                                className="px-3 py-1 text-[8px] rounded-[15px] border border-gray-200/50 flex items-center gap-1 backdrop-blur-sm"
                             >
                                 <button
                                     onClick={(e) => {

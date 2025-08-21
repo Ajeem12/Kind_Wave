@@ -10,10 +10,10 @@ const formatDateToIndian = (dateString) => {
 
 const getStatusLabelAndColor = (status) => {
     switch (status) {
-        case 0: return { label: 'Submited', color: 'text-[#06acff]' };
+        case 0: return { label: 'Submited', color: 'text-[#00acff]' };
         case 1: return { label: 'Viewed', color: 'text-violet-500' };
-        case 2: return { label: 'Accepted', color: 'text-green-500' };
-        case 3: return { label: 'Rejected', color: 'text-red-500' };
+        case 2: return { label: 'Accepted', color: 'text-[#00b92e]' };
+        case 3: return { label: 'Rejected', color: 'text-[#ff0000]' };
         default: return { label: 'Unknown', color: 'text-gray-500' };
     }
 };
@@ -24,7 +24,7 @@ const RecentApplications = ({ data, onJourneyClick }) => {
 
     return (
         <div className="mb-4">
-            <div className="flex gap-2 overflow-x-auto hide-scrollbar scroll-smooth py-2 px-4">
+            <div className="flex gap-3 overflow-x-auto hide-scrollbar scroll-smooth py-2 px-4">
                 {data?.map((app) => {
                     const { label, color } = getStatusLabelAndColor(app.status);
                     const isProfilePage = location.pathname === '/profile' && role === 1;
@@ -36,7 +36,7 @@ const RecentApplications = ({ data, onJourneyClick }) => {
                         <div
                             key={app.id}
                             onClick={() => onJourneyClick(app)}
-                            className="min-w-[160px] md:min-w-[200px] rounded-md shadow-md p-2 cursor-pointer hover:shadow-md transition"
+                            className="min-w-[160px] md:min-w-[200px] rounded-[10px] shadow-[0_4px_4.2px_rgba(0,0,0,0.25)] p-2 cursor-pointer hover:shadow-md transition"
                         >
                             {!isProfilePage && (
                                 <Link to={link}>
@@ -49,7 +49,7 @@ const RecentApplications = ({ data, onJourneyClick }) => {
                             {isProfilePage && (
                                 <>
                                     <p className="text-[11px] text-gray-600">{app?.desc}</p>
-                                    <h3 className="text-xs font-semibold truncate">{app?.title}</h3>
+                                    <h3 className="text-xs font-medium truncate">{app?.title}</h3>
                                 </>
                             )}
                         </div>
