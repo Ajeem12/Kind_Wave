@@ -1,21 +1,24 @@
+
+
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { RxCross2 } from "react-icons/rx";
 import swal from 'sweetalert';
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { registerOrganization } from "../../api/orgRegApi"
-
 import { getCategories } from "../../api/getCategoriesApi"
 import { volReg } from "../../api/volRegApi";
-
-
+import { login, volLogin } from "../../api/authApi";
+import useOrgAuthStore from "../../store/useOrgAuthStore";
+import { useNavigate } from "react-router-dom";
 
 const RegisterModal = ({ onClose, role, onSwitchToLogin }) => {
     const [name, setName] = useState("");
     const [categories, setCategories] = useState("")
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-
+    const navigate = useNavigate();
+    const loginOrg = useOrgAuthStore((state) => state.loginOrg);
 
     const useCategories = () => {
         return useQuery({
@@ -27,15 +30,35 @@ const RegisterModal = ({ onClose, role, onSwitchToLogin }) => {
     const { data, isLoading, isError, error } = useCategories();
     const categorie = data?.data;
 
+    // Login mutation for auto-login after registration
+    const loginMutation = useMutation({
+        mutationFn: role === "volunteer" ? volLogin : login,
+        onSuccess: (data) => {
+            loginOrg(data.data);
+            swal("Success!", "Registration and login successful!", "success");
+            navigate("/")
+            onClose();
+        },
+        onError: (err) => {
+            console.error("Auto-login failed:", err);
+            // Still show success for registration but inform about manual login
+            swal("Registration Successful!", "Please login with your credentials.", "success");
+            onSwitchToLogin(email, password);
+        },
+    });
 
-    const mutation = useMutation({
+    // Register mutation
+    const registerMutation = useMutation({
         mutationFn: role === "volunteer" ? volReg : registerOrganization,
         onSuccess: (res) => {
-            swal("Success!", "Registration successful!", "success");
-            console.log(res);
-            onSwitchToLogin();
-            onClose();
+            console.log("Registration successful:", res);
 
+            // After successful registration, automatically log in
+            loginMutation.mutate({
+                email,
+                password,
+                role: role.toLowerCase()
+            });
         },
         onError: (err) => {
             console.error(err);
@@ -55,10 +78,9 @@ const RegisterModal = ({ onClose, role, onSwitchToLogin }) => {
         e.preventDefault();
         const payload = role === "volunteer"
             ? { full_name: name, email, password }
-            : { organization_name: name, email, password, categories };
-        mutation.mutate(payload);
+            : { organization_name: name, email, password, category: categories };
+        registerMutation.mutate(payload);
     };
-
 
     return (
         <AnimatePresence>
@@ -122,7 +144,6 @@ const RegisterModal = ({ onClose, role, onSwitchToLogin }) => {
                                 ))}
                             </select>
                         )}
-
                         <input
                             type="email"
                             placeholder="Enter Email"
@@ -138,23 +159,25 @@ const RegisterModal = ({ onClose, role, onSwitchToLogin }) => {
                             className="border-[0.5px] rounded-[10px] px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
 
-                        <label className="flex items-center gap-2 text-sm text-gray-600 ml-3 mb-4">
+                        <label className="flex items-center  text-sm text-gray-600 ml-3 mb-4">
                             <input
                                 type="checkbox"
-                                className="rounded text-blue-500 focus:ring-blue-500"
+                                className="rounded text-blue-500 focus:ring-blue-500 mr-1"
                             />
-                            I agree to the process of{" "}
-                            <a href="#" className="text-blue-500 hover:underline">
+                            I agree to the process of
+                            <a href="#" className="text-blue-500 hover:underline ml-1">
                                 Personal data
                             </a>
                         </label>
 
                         <button
                             type="submit"
-                            disabled={mutation.isPending}
-                            className="bg-[#00acff] text-white py-3 rounded-lg hover:bg-blue-600 transition font-medium disabled:opacity-50"
+                            disabled={registerMutation.isPending || loginMutation.isPending}
+                            className="bg-[#00acff] text-white py-3 rounded-[10px] hover:bg-blue-600 transition font-medium disabled:opacity-50"
                         >
-                            {mutation.isPending ? "Registering..." : "Sign Up"}
+                            {registerMutation.isPending || loginMutation.isPending
+                                ? "Processing..."
+                                : "Sign Up"}
                         </button>
                     </form>
 
@@ -167,8 +190,8 @@ const RegisterModal = ({ onClose, role, onSwitchToLogin }) => {
                     <p className="text-center text-sm text-gray-600">
                         Already have an account?{" "}
                         <button
-                            onClick={onSwitchToLogin}
-                            className="text-blue-500 font-medium hover:underline"
+                            onClick={() => onSwitchToLogin(email, password)}
+                            className="text-[#00acff] font-medium hover:underline"
                         >
                             Sign In
                         </button>
@@ -182,4 +205,3 @@ const RegisterModal = ({ onClose, role, onSwitchToLogin }) => {
 };
 
 export default RegisterModal;
-

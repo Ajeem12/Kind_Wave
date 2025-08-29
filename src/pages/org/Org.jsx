@@ -1,15 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import SearchBar from '../../components/searchbar/SearchBar';
 import { Link, useLocation } from 'react-router-dom';
-import { Heart } from 'lucide-react';
-import { useMutation } from '@tanstack/react-query';
-import { useQuery } from '@tanstack/react-query';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faHeart as faSolidHeart } from '@fortawesome/free-solid-svg-icons';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { addToWhishCart, getWhishCart } from "../../api/addToWhishCartApi"
+import { removeFromWhishCart } from "../../api/removeFromWishCartApi"
 import { getOrgList } from "../../api/orgListApi"
 import useOrgAuthStore from '../../store/useOrgAuthStore';
 
 const Org = () => {
     const [searchResults, setSearchResults] = useState([]);
+    const queryClient = useQueryClient();
     const handleSearchResults = (results) => {
         setSearchResults(results);
     };
@@ -34,6 +36,11 @@ const Org = () => {
     }
     const { data: whishCartData, isLoading: whishCartLoading, error: whishCartError } = useGetWhishCart(token);
     const whishCartList = whishCartData?.data?.org || [];
+
+    const orgWishMap = {};
+    whishCartList.forEach(item => {
+        orgWishMap[item.organization_id] = item.id;
+    });
 
     const isOrgInWishlist = (orgId) => {
         return whishCartList?.some(item => item.organization_id === orgId);
@@ -64,22 +71,55 @@ const Org = () => {
     });
 
 
+    const removeMutation = useMutation({
+        mutationFn: (orgId) => removeFromWhishCart(orgId, token),
+        onSuccess: () => {
+            queryClient.invalidateQueries(['whishCart', token]);
+        },
+        onError: (err) => {
+            console.error(err);
+        }
+    });
+
+    // const handleLike = (e, org) => {
+    //     e.preventDefault();
+    //     e.stopPropagation();
+    //     // if (role === 1) return;
+
+    //     if (isOrgInWishlist(org.id)) {
+    //         console.log("Organization is already in wishlist");
+    //         return;
+    //     }
+    //     addToWishlistMutation.mutate(org.id);
+
+    //     setLikedStates(prev => ({
+    //         ...prev,
+    //         [org.id]: !prev[org.id]
+    //     }));
+    // };
+
     const handleLike = (e, org) => {
         e.preventDefault();
-        e.stopPropagation();
         if (role === 1) return;
-
-        if (isOrgInWishlist(org.id)) {
-            console.log("Organization is already in wishlist");
-            return;
+        if (likedStates[org.id]) {
+            // REMOVE
+            const wishlistId = orgWishMap[org.id];
+            if (wishlistId) {
+                removeMutation.mutate({ orgId: wishlistId });
+            }
+        } else {
+            // ADD
+            addToWishlistMutation.mutate(org.id);
         }
-        addToWishlistMutation.mutate(org.id);
 
+        // toggle UI state
         setLikedStates(prev => ({
             ...prev,
-            [org.id]: !prev[org.id]
+            [org.id]: !prev[org.id],
         }));
     };
+
+
 
     return (
         <>
@@ -90,13 +130,13 @@ const Org = () => {
                     {orgList.map((org, index) => (
                         <div key={index}>
                             {role === 2 ? (
-                                <Link to="/org-details">
+                                <Link to="" state={{ org }}>
                                     <div
-                                        className={`relative p-4 rounded-[10px] flex flex-col items-center justify-center 
-                  hover:bg-gray-50 transition-colors duration-200 h-[150px] w-[100%]  shadow-[0_2px_4px_rgba(0,0,0,0.25)]`}>
+                                        className="relative p-4 rounded-[10px] flex flex-col items-center justify-center 
+                  hover:bg-gray-50 transition-colors duration-200 h-[150px] w-[100%]  shadow-[0_2px_4px_rgba(0,0,0,0.25)]">
                                         <div className="h-40 w-44 md:h-40 mb-2 flex items-center justify-center">
                                             <img
-                                                src={`${imgurl}/organization/${org?.photo}`}
+                                                src={org?.photo ? `${imgurl}/organization/${org?.photo}` : `/img/ngo.png`}
                                                 alt={`${org.organization_name} logo`}
                                                 className="h-full w-full object-contain"
                                             />
@@ -106,32 +146,34 @@ const Org = () => {
                                             onClick={e => handleLike(e, org)}
                                             className="absolute top-2 right-2"
                                         >
-                                            <Heart
-                                                size={22}
-                                                fill={likedStates[org.id] ? "white" : "black"}
-                                                fillOpacity={likedStates[org.id] ? 1 : 0.2}
-                                                className={likedStates[org.id] ? "text-gray-50" : "text-[#c4c4c4]"}
+
+                                            <FontAwesomeIcon
+                                                icon={faSolidHeart}
+                                                size="lg"
+                                                color={likedStates[org.id] ? "#ffffff" : "rgba(0,0,0,0.3)"}
+                                                className={`drop-shadow-[0_0_1.8px_rgba(0,0,0,0.25)]`}
                                             />
                                         </button>
                                     </div>
 
                                     <h3 className="text-sm font-medium text-black text-start ml-4 mt-1">
-                                        {org?.organization_name}
+                                        {org?.organization_name
+                                            ? org.organization_name.charAt(0).toUpperCase() + org.organization_name.slice(1)
+                                            : ""}
+
                                     </h3>
                                     <p className='text-xs text-gray-400 ml-4'>{org?.category_details?.category_name}</p>
                                 </Link>
                             ) : (
-                                <Link to="/org-details" key={index}>
+                                <Link to="" key={index}>
                                     <div
-                                        className={`relative p-4 rounded-lg flex flex-col items-center justify-center 
-                  hover:bg-gray-50 transition-colors duration-200 h-[150px] w-[100%]
-                  ${index % 2 === 0
-                                                ? "shadow-[2px_2px_4px_rgba(0,0,0,0.1)] "
-                                                : "shadow-[-2px_2px_4px_rgba(0,0,0,0.1)]"}`}
+                                        className="relative p-4 rounded-lg flex flex-col items-center justify-center 
+                                                 hover:bg-gray-50 transition-colors duration-200 h-[150px] w-[100%]
+                                                         shadow-[0_2px_4px_rgba(0,0,0,0.25)]"
                                     >
                                         <div className="h-40 w-44 md:h-40 mb-2 flex items-center justify-center">
                                             <img
-                                                src={`${imgurl}/organization/${org?.photo}`}
+                                                src={org?.photo ? `${imgurl}/organization/${org?.photo}` : `/img/ngo.png`}
                                                 alt={`${org.organization_name} logo`}
                                                 className="h-full w-full object-contain"
                                             />
@@ -141,17 +183,20 @@ const Org = () => {
                                             onClick={e => handleLike(e, org)}
                                             className="absolute top-2 right-2"
                                         >
-                                            <Heart
-                                                size={22}
-                                                fill={likedStates[org.id] ? "white" : "black"}
-                                                fillOpacity={likedStates[org.id] ? 1 : 0.2}
-                                                className={likedStates[org.id] ? "text-gray-50" : "text-[#c4c4c4]"}
+                                            <FontAwesomeIcon
+                                                icon={faSolidHeart}
+                                                size="lg"
+                                                color={likedStates[org.id] ? "#ffffff" : "rgba(0,0,0,0.3)"}
+                                                className={`drop-shadow-[0_0_1.8px_rgba(0,0,0,0.25)]`}
                                             />
                                         </button>
                                     </div>
 
                                     <h3 className="text-sm font-medium text-black text-start ml-4 mt-1">
-                                        {org?.organization_name}
+                                        {org?.organization_name
+                                            ? org.organization_name.charAt(0).toUpperCase() + org.organization_name.slice(1)
+                                            : ""}
+
                                     </h3>
                                     <p className='text-xs text-gray-400 ml-4'>{org?.category_details?.category_name}</p>
                                 </Link>

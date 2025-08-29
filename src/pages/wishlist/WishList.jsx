@@ -1,14 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import EventCard from '../../components/event_card/EventCard';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faHeart as faSolidHeart } from '@fortawesome/free-solid-svg-icons';
 import { getWhishCart } from "../../api/addToWhishCartApi"
+import { removeFromWhishCart } from "../../api/removeFromWishCartApi"
 import useOrgAuthStore from '../../store/useOrgAuthStore';
-import { useQuery } from '@tanstack/react-query';
-import { Heart } from 'lucide-react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+
 
 const WishList = () => {
     const [activeTab, setActiveTab] = useState('Events');
     const [likedStates, setLikedStates] = useState({});
     const token = useOrgAuthStore((state) => state.orgUser?.token);
+    const queryClient = useQueryClient();
 
     const useGetWhishCart = (token) => {
         return useQuery({
@@ -18,11 +22,24 @@ const WishList = () => {
         });
     }
     const { data: whishCartData, isLoading: whishCartLoading, error: whishCartError } = useGetWhishCart(token);
-    const whishCartList = whishCartData?.data?.org || [];
+    const whishCartList = whishCartData?.data?.org;
     const imgurl = import.meta.env.VITE_MEDIA_URL;
     const eventWhishCart = whishCartData?.data.event
 
 
+    const removeMutation = useMutation({
+        mutationFn: (orgId) => removeFromWhishCart(orgId, token),
+        onSuccess: () => {
+            queryClient.invalidateQueries(['whishCart', token]);
+        },
+        onError: (err) => {
+            console.error(err);
+        }
+    });
+
+    const handleRemove = (org) => {
+        removeMutation.mutate({ orgId: org.id });
+    };
 
     useEffect(() => {
         const updatedStates = {};
@@ -33,8 +50,10 @@ const WishList = () => {
     }, [whishCartList]);
 
 
+
+
     return (
-        <div className="wishlist-container max-w-6xl mx-auto py-4">
+        <div className="wishlist-container max-w-6xl mx-auto py-4 mb-20">
             {/* Tabs */}
             <div className=" bg-white shadow-[0_2px_4px_-2px_rgba(0,0,0,0.25)]">
                 <div className="flex flex-col items-center justify-center px-4">
@@ -64,6 +83,7 @@ const WishList = () => {
                         {eventWhishCart?.map((event, index) => (
                             <div key={event.id || index}>
                                 <EventCard
+                                    wishId={event.id}
                                     id={event.event_id}
                                     image={event?.event_details?.image}
                                     title={event?.event_details?.title}
@@ -80,29 +100,27 @@ const WishList = () => {
                         {whishCartList.map((org, index) => (
                             <div key={index}>
                                 <div
-                                    className={`relative p-4 rounded-lg flex flex-col items-center justify-center 
-                  hover:bg-gray-50 transition-colors duration-200 h-[150px] w-[100%]
-                  ${index % 2 === 0
-                                            ? "shadow-[2px_2px_4px_rgba(0,0,0,0.1)] "
-                                            : "shadow-[-2px_2px_4px_rgba(0,0,0,0.1)]"}`}
+                                    className="relative p-4 rounded-lg flex flex-col items-center justify-center 
+                  hover:bg-gray-50 transition-colors duration-200 h-[150px] w-[100%]  shadow-[0_2px_4px_rgba(0,0,0,0.25)]
+                 "
                                 >
                                     <div className="h-40 w-44 md:h-40 mb-2 flex items-center justify-center">
                                         <img
-                                            src={`${imgurl}/organization/${org?.organization_details?.photo}`}
+                                            src={org?.organization_details?.photo ? `${imgurl}/organization/${org?.organization_details?.photo}` : `/img/ngo.png`}
                                             alt={`${org?.organization_details?.organization_name} logo`}
                                             className="h-full w-full object-contain"
                                         />
                                     </div>
 
                                     <button
-                                        onClick={e => handleLike(e, org)}
+                                        onClick={() => handleRemove(org)}
                                         className="absolute top-2 right-2"
                                     >
-                                        <Heart
-                                            size={22}
-                                            fill={likedStates[org.id] ? "white" : "black"}
-                                            fillOpacity={likedStates[org.id] ? 1 : 0.2}
-                                            className={likedStates[org.id] ? "text-gray-50" : "text-[#c4c4c4]"}
+                                        <FontAwesomeIcon
+                                            icon={faSolidHeart}
+                                            size="lg"
+                                            color={likedStates[org.organization_id] ? "#ffffff" : "rgba(0,0,0,0.3)"}
+                                            className={`drop-shadow-[0_0_1.8px_rgba(0,0,0,0.25)]`}
                                         />
                                     </button>
                                 </div>
@@ -121,3 +139,8 @@ const WishList = () => {
 };
 
 export default WishList;
+
+
+
+
+

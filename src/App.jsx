@@ -4,6 +4,7 @@ import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom"
 import useOrgAuthStore from "./store/useOrgAuthStore"
 import { Loader2 } from 'lucide-react';
 import Notification from './pages/notification/Notification';
+import Member from './pages/member/Member';
 
 
 
@@ -23,8 +24,6 @@ const ApplyVolDetails = lazy(() => import("./pages/applyVoldetails/ApplyVolDetai
 const UpdatePassword = lazy(() => import("./pages/updatepassword/UpdatePassword"))
 const OrgDetails = lazy(() => import("./pages/orgdetails/OrgDetails"))
 const EditProfilePhoto = lazy(() => import("./pages/edit_profile_page_photo/EditProfilePhoto"));
-const EditProfileName = lazy(() => import("./pages/edit_profile_name/EditProfileName"));
-const EditEmailAddress = lazy(() => import("./pages/edit_email/EditEmailAddress"));
 const VolProfile = lazy(() => import("./pages/volProfile/VolProfile"))
 
 
@@ -101,12 +100,8 @@ const router = createBrowserRouter([
         element: <EditProfilePhoto />
       },
       {
-        path: "/edit-profile-name",
-        element: <EditProfileName />
-      },
-      {
-        path: "/edit-email",
-        element: <EditEmailAddress />
+        path: "/member-details/:id",
+        element: <Member />
       },
       {
         path: "/notification",

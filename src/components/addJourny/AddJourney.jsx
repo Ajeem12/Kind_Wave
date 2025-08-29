@@ -118,7 +118,7 @@ const AddJourney = ({ onJournyClose, journeyToEdit }) => {
                         <button
                             type="button"
                             onClick={onJournyClose}
-                            className="px-5 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                            className="text-sm font-normal px-4 py-2 rounded-[10px]   transition shadow-[0_2px_4px_rgba(0,0,0,0.25)]"
                         >
                             Cancel
                         </button>

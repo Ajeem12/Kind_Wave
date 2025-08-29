@@ -114,7 +114,7 @@ const SearchBar = ({ onSearchResults }) => {
 
     return (
         <>
-            <div className="sticky top-15 md:top-[76px] z-10 px-6 p-4 bg-white/90 backdrop-blur-sm   shadow-[0_2px_4px_rgba(0,0,0,0.25)]">
+            <div className="sticky top-15 md:top-[76px] z-10 px-6 p-2 bg-white/90 backdrop-blur-sm  shadow-[0_2px_4px_rgba(0,0,0,0.25)]">
                 {/* Search Input */}
                 <div className="relative flex items-center text-sm">
                     <input
@@ -126,7 +126,7 @@ const SearchBar = ({ onSearchResults }) => {
                     />
                     <FiSearch onClick={handleSearch} className="absolute left-3 text-gray-500" size={20} />
                     <button
-                        className="absolute right-3  text-gray-400"
+                        className="absolute right-3  text-[#8b8686]"
                         onClick={() => setIsFilterOpen(true)}
                         aria-label="Filter options"
                     >

@@ -1,6 +1,12 @@
 import React, { useState } from 'react';
+import { useLocation } from 'react-router-dom';
 
 const OrgDetails = () => {
+    const location = useLocation();
+    const org = location.state?.org;
+    console.log("Organization details:", org);
+
+
     const [editMode, setEditMode] = useState(false);
     const [orgData, setOrgData] = useState({
         name: 'Helping Hands Foundation',

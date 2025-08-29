@@ -1,13 +1,15 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Heart, LogOut, Search, User } from "lucide-react";
 import { motion } from "framer-motion";
 import useOrgAuthStore from "../../store/useOrgAuthStore";
+import { FiDownload } from "react-icons/fi";
 
 const NavBar = () => {
     const location = useLocation();
     const navigate = useNavigate()
     const logoutOrg = useOrgAuthStore((state) => state.logoutOrg);
+    const [isInstallable, setIsInstallable] = useState(false);
 
     const formatPath = (path) => {
         if (path === "/") return "Home";
@@ -20,9 +22,44 @@ const NavBar = () => {
         navigate("/landing")
     }
 
+    // PWA installation logic
+    useEffect(() => {
+        const handler = (e) => {
+            e.preventDefault();
+            window.deferredPWAInstallPrompt = e;
+            setIsInstallable(true);
+        };
+
+        const checkInstalled = () => {
+            if (window.matchMedia('(display-mode: standalone)').matches) {
+                setIsInstallable(false);
+            }
+        };
+
+        window.addEventListener('beforeinstallprompt', handler);
+        window.addEventListener('appinstalled', checkInstalled);
+        checkInstalled();
+
+        return () => {
+            window.removeEventListener('beforeinstallprompt', handler);
+            window.removeEventListener('appinstalled', checkInstalled);
+        };
+    }, []);
+
+    const handleInstallClick = async () => {
+        if (!window.deferredPWAInstallPrompt) return;
+        window.deferredPWAInstallPrompt.prompt();
+        const { outcome } = await window.deferredPWAInstallPrompt.userChoice;
+        if (outcome === 'accepted') {
+            window.deferredPWAInstallPrompt = null;
+            setIsInstallable(false);
+        }
+    };
+
+
 
     return (
-        <div className="sticky top-0 z-50 bg-white shadow-md">
+        <div className="sticky top-0 z-50 bg-white ">
             <div className="max-w-6xl mx-auto px-4 py-4 md:py-6 flex justify-between items-center">
                 <Link to="/">               {/* Logo */}
                     <motion.h1
@@ -78,6 +115,15 @@ const NavBar = () => {
                         <LogOut size={18} />
                         <span className="text-sm ">Logout</span>
                     </motion.button>
+                    {/* PWA Install button */}
+                    {isInstallable && (
+                        <button
+                            onClick={handleInstallClick}
+                            className="text-[#06acff] font-semibold"
+                        >
+                            <FiDownload size={20} />
+                        </button>
+                    )}
                 </div>
             </div>
         </div>

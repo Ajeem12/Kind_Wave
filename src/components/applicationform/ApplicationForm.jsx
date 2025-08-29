@@ -24,6 +24,7 @@ const ApplicationForm = ({ onFormClose, event }) => {
     });
 
     const token = useOrgAuthStore((state) => state.orgUser?.token);
+    const role = useOrgAuthStore((state) => state.orgUser?.role);
 
     // Fetch volunteer profile data
     const { data: profileData, isLoading: isProfileLoading } = useQuery({
@@ -100,8 +101,10 @@ const ApplicationForm = ({ onFormClose, event }) => {
         }
 
         try {
-            // First update the profile
-            await profileMutation.mutateAsync(formData);
+            if (role !== 1) {
+                // First update the profile only if role is not 1
+                await profileMutation.mutateAsync(formData);
+            }
             // Then submit the application
             await applicationMutation.mutateAsync(formData);
 
@@ -169,7 +172,7 @@ const ApplicationForm = ({ onFormClose, event }) => {
                                 value={formData.age}
                                 onChange={handleChange}
                                 className="border border-gray-300 rounded-xl py-2 px-2 outline-none placeholder-gray-400 w-2/3"
-                                min="18"
+                                min="1"
                                 disabled={isLoading}
                             />
                         </div>

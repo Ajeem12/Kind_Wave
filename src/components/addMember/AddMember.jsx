@@ -9,7 +9,7 @@ import swal from 'sweetalert';
 const AddMember = ({ onMemberClose, memberToEdit }) => {
     const [formData, setFormData] = useState({
         profile_photo: null,
-        name: memberToEdit?.name || '',
+        name: memberToEdit?.full_name || '',
         previewImage: memberToEdit?.profile_photo || null
     });
 
@@ -19,9 +19,9 @@ const AddMember = ({ onMemberClose, memberToEdit }) => {
     const mutation = useMutation({
         mutationFn: (formData) => {
             const memberData = new FormData();
-            memberData.append('name', formData.name);
+            memberData.append('full_name', formData.name);
             if (formData.profile_photo) {
-                memberData.append('profile_photo', formData.profile_photo);
+                memberData.append('image', formData.profile_photo);
             }
             if (memberToEdit) {
                 return editMember(memberToEdit.id, memberData, token);
@@ -30,7 +30,7 @@ const AddMember = ({ onMemberClose, memberToEdit }) => {
             }
         },
         onSuccess: () => {
-            onJournyClose();
+            onMemberClose();
             swal(memberToEdit ? 'Member updated successfully' : 'Member added successfully');
         },
         onError: (error) => {
@@ -64,6 +64,10 @@ const AddMember = ({ onMemberClose, memberToEdit }) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        if (!formData.profile_photo && !memberToEdit) {
+            swal('Error', 'Please upload a profile photo for the member.');
+            return;
+        }
         mutation.mutate(formData);
     };
 
@@ -92,7 +96,11 @@ const AddMember = ({ onMemberClose, memberToEdit }) => {
                             <div className="relative mb-4">
                                 {formData.previewImage ? (
                                     <img
-                                        src={formData.previewImage}
+                                        src={
+                                            formData.previewImage.startsWith("blob:")
+                                                ? formData.previewImage // local preview
+                                                : `${import.meta.env.VITE_MEDIA_URL}/members/${formData.previewImage}` // server image
+                                        }
                                         alt="Profile preview"
                                         className="w-24 h-24 rounded-full object-cover border-4 border-gray-200"
                                     />
@@ -116,6 +124,7 @@ const AddMember = ({ onMemberClose, memberToEdit }) => {
                                     onChange={handleFileChange}
                                     accept="image/*"
                                     className="hidden"
+
                                 />
                             </div>
                             <p className="text-sm text-gray-500 text-center">
@@ -149,7 +158,7 @@ const AddMember = ({ onMemberClose, memberToEdit }) => {
                         <button
                             type="button"
                             onClick={onMemberClose}
-                            className="px-5 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                            className="text-sm font-normal px-4 py-2 rounded-[10px] transition shadow-[0_2px_4px_rgba(0,0,0,0.25)]"
                         >
                             Cancel
                         </button>

@@ -1,159 +1,169 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Camera, Upload, X, Check, User } from 'lucide-react';
-import { useMutation } from '@tanstack/react-query';
+import React, { useRef, useState } from "react";
+import { useMutation } from "@tanstack/react-query";
 import { updateProfilePic } from "../../api/volUpdatePPApi";
 import useOrgAuthStore from "../../store/useOrgAuthStore";
-import swal from 'sweetalert';
-import { useLocation } from 'react-router-dom';
+import { useLocation } from "react-router-dom";
+import { FaCamera, FaSpinner, FaCheckCircle, FaTimes } from "react-icons/fa";
+import swal from "sweetalert";
 
 const EditProfilePhoto = () => {
     const location = useLocation();
     const userData = location.state?.userData;
-
-
-    const [photo, setPhoto] = useState(null);
-    const [isEditing, setIsEditing] = useState(false);
     const fileInputRef = useRef(null);
+    const [previewUrl, setPreviewUrl] = useState(null);
     const token = useOrgAuthStore((state) => state.orgUser?.token);
-    const [selectedFile, setSelectedFile] = useState(null);
+    const userId = userData?.id;
     const imgUrl = import.meta.env.VITE_MEDIA_URL;
 
-    useEffect(() => {
-        if (userData?.profile_photo) {
-            setPhoto(`${imgUrl}/volunteer/${userData?.profile_photo}`);
-        }
-    }, [userData]);
-
-    const { mutate, isLoading } = useMutation({
+    const mutation = useMutation({
         mutationFn: (formData) => updateProfilePic(formData, token),
         onSuccess: () => {
-            swal('Success', 'Profile picture updated successfully!', 'success');
-            setIsEditing(false);
+            setPreviewUrl(null);
+            swal("Profile picture updated successfully!");
         },
-        onError: (error) => {
-            swal('Error', error.message || 'Failed to update profile picture', 'error');
-        }
+        onError: (err) => alert("Failed to update profile picture: " + err.message),
     });
 
-    const defaultAvatar = (
-        <div className="w-40 h-40 rounded-full bg-gray-200 flex items-center justify-center">
-            <User className="w-20 h-20 text-gray-400" />
-        </div>
-    );
-
-    const handleFileChange = (e) => {
+    const handleFileSelect = (e) => {
         const file = e.target.files[0];
-        if (file) {
-            setSelectedFile(file);
-            const reader = new FileReader();
-            reader.onload = () => {
-                setPhoto(reader.result);
-                setIsEditing(true);
-            };
-            reader.readAsDataURL(file);
-        }
-    };
+        if (!file) return;
 
-    const handleSave = () => {
-        if (!selectedFile) {
-            swal('Error', 'Please select a file first', 'error');
+        if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+            swal("Only JPG, PNG, WEBP images are allowed");
             return;
         }
+
+        if (file.size > 5 * 1024 * 1024) {
+            swal("File must be smaller than 5MB");
+            return;
+        }
+
+        setPreviewUrl(URL.createObjectURL(file));
+    };
+
+    const handleUpload = () => {
+        if (!previewUrl) return;
+
+        const fileInput = fileInputRef.current;
+        if (!fileInput || !fileInput.files[0]) return;
+
+        const file = fileInput.files[0];
         const formData = new FormData();
-        formData.append('image', selectedFile);
-        mutate(formData);
+        formData.append("image", file);
+        formData.append("id", userId);
+
+        mutation.mutate(formData);
     };
 
     const handleCancel = () => {
-        setPhoto(null);
-        setSelectedFile(null);
-        setIsEditing(false);
+        setPreviewUrl(null);
+        if (fileInputRef.current) {
+            fileInputRef.current.value = "";
+        }
     };
 
-    const triggerFileInput = () => {
-        fileInputRef.current.click();
+    const handleChoosePhoto = () => {
+        fileInputRef.current?.click();
     };
 
     return (
-        <div className=" p-6 ">
-            <h2 className="text-xl font-semibold text-gray-800 mb-6">Edit Profile Photo</h2>
 
-            <div className="flex flex-col items-center">
-                {/* Photo Preview */}
-                <div className="relative mb-6">
-                    {photo ? (
-                        <img
-                            src={photo}
-                            alt="Profile preview"
-                            className="w-40 h-40 rounded-full object-cover border-2 border-gray-200"
-                        />
-                    ) : (
-                        defaultAvatar
-                    )}
+        <div className=" mt-10">
+            {/* Header */}
+            <div className="text-center mb-8">
+                <h1 className="text-2xl font-bold text-gray-800 mb-2">Update Profile Picture</h1>
+                <p className="text-gray-600">Choose a new photo for your profile</p>
+            </div>
+
+            {/* Profile Photo Preview */}
+            <div className="flex justify-center mb-6">
+                <div className="relative">
+                    <img
+                        src={previewUrl || (userData?.profile_photo ? `${imgUrl}/volunteer/${userData.profile_photo}` : "/default-avatar.png")}
+                        alt="Profile"
+                        className="w-32 h-32 rounded-full object-cover border-4 border-blue-100 shadow-lg"
+                    />
+                    <button
+                        onClick={handleChoosePhoto}
+                        className="absolute bottom-0 right-0 bg-[#00acff] text-white p-3 rounded-full shadow-md"
+                    >
+                        <FaCamera className="w-4 h-4" />
+                    </button>
                 </div>
+            </div>
 
-                {/* Action Buttons */}
-                {!isEditing ? (
-                    <div className="flex gap-3">
-                        <button
-                            onClick={triggerFileInput}
-                            className="flex items-center gap-2 px-4 py-2 bg-[#06acff] text-white rounded-lg hover:bg-[#0595e0] transition-colors"
-                            disabled={isLoading}
-                        >
-                            <Upload size={18} />
-                            {isLoading ? 'Uploading...' : 'Upload Photo'}
-                        </button>
-                        <input
-                            type="file"
-                            ref={fileInputRef}
-                            onChange={handleFileChange}
-                            accept="image/*"
-                            className="hidden"
-                            disabled={isLoading}
-                        />
-                    </div>
+            {/* Hidden file input */}
+            <input
+                type="file"
+                ref={fileInputRef}
+                accept="image/jpeg,image/png,image/webp"
+                onChange={handleFileSelect}
+                className="hidden"
+            />
+
+            {/* File info */}
+            {previewUrl && (
+                <div className="bg-blue-50 rounded-lg p-4 mb-6 text-center">
+                    <p className="text-sm text-[#00acff] font-medium">
+                        New photo selected
+                    </p>
+                    <p className="text-xs text-blue-600 mt-1">
+                        Click Upload to save changes
+                    </p>
+                </div>
+            )}
+
+            {/* Action buttons */}
+            <div className="flex gap-3 justify-center">
+                {!previewUrl ? (
+                    <button
+                        onClick={handleChoosePhoto}
+                        className="px-6 py-3 bg-[#00acff] shadow-[0_2px_4px_rgba(0,0,0,0.25)] text-white rounded-lg 0 transition-colors font-medium"
+                    >
+                        Choose Photo
+                    </button>
                 ) : (
-                    <div className="flex gap-3">
+                    <>
                         <button
-                            onClick={handleSave}
-                            className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-                            disabled={isLoading}
+                            onClick={handleUpload}
+                            disabled={mutation.isPending}
+                            className="px-6 py-3 bg-[#00acff] shadow-[0_2px_4px_rgba(0,0,0,0.25)] text-white rounded-[10px]  font-medium flex items-center gap-2"
                         >
-                            {isLoading ? (
-                                <span className="flex items-center">
-                                    <svg className="animate-spin h-4 w-4 mr-2" viewBox="0 0 24 24">
-                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                    </svg>
-                                    Saving...
-                                </span>
-                            ) : (
+                            {mutation.isPending ? (
                                 <>
-                                    <Check size={18} />
-                                    Save
+                                    <FaSpinner className="animate-spin" />
+                                    Uploading...
                                 </>
+                            ) : (
+                                'Upload'
                             )}
                         </button>
                         <button
                             onClick={handleCancel}
-                            className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
-                            disabled={isLoading}
+                            className="px-6 py-3  text-gray-700 rounded-[10px] shadow-[0_2px_4px_rgba(0,0,0,0.25)] font-medium flex items-center gap-2"
                         >
-                            <X size={18} />
+                            <FaTimes />
                             Cancel
                         </button>
-                    </div>
+                    </>
                 )}
             </div>
 
-            {/* Help Text */}
-            <p className="mt-6 text-sm text-gray-500 text-center">
-                {photo ?
-                    "Your new profile photo will be visible to other users" :
-                    "Upload a photo to personalize your profile"
-                }
-            </p>
+            {/* Status messages */}
+            {mutation.isSuccess && (
+                <div className="mt-4 p-3 bg-green-100 text-green-700 rounded-lg text-center flex items-center justify-center gap-2">
+                    <FaCheckCircle />
+                    Profile picture updated successfully!
+                </div>
+            )}
+
+            {mutation.isError && (
+                <div className="mt-4 p-3 bg-red-100 text-red-700 rounded-lg text-center">
+                    Error: {mutation.error.message}
+                </div>
+            )}
         </div>
+
     );
 };
 

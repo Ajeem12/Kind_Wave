@@ -39,7 +39,7 @@ const RecentApplications = ({ data, onJourneyClick }) => {
                             className="min-w-[160px] md:min-w-[200px] rounded-[10px] shadow-[0_4px_4.2px_rgba(0,0,0,0.25)] p-2 cursor-pointer hover:shadow-md transition"
                         >
                             {!isProfilePage && (
-                                <Link to={link}>
+                                <Link >
                                     <h3 className="text-xs font-semibold truncate">{name}</h3>
                                     <p className="text-[11px] text-gray-600 truncate">{desc}</p>
                                     <p className="text-[10px] text-gray-400">{date}</p>

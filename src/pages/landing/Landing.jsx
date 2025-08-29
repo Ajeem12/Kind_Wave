@@ -16,20 +16,20 @@ const Landing = () => {
     return (
         <div className="relative h-screen w-full">
             <img
-                src="https://imgs.search.brave.com/BBi3liU6fdDvDS_y4BjHGhi8IN9KIEFBJD-x0NjcSWU/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9pbWcu/ZnJlZXBpay5jb20v/cHJlbWl1bS1waG90/by9kaXZlcnNlLWdy/b3VwLXBlb3BsZS10/b2dldGhlci1zdHVk/aW8tcG9ydHJhaXRf/NTM4NzYtODM5MjYu/anBnP3NlbXQ9YWlz/X2h5YnJpZCZ3PTc0/MA"
+                src="/img/landing.png"
                 alt="Group Hug"
                 className="absolute inset-0 h-full w-full object-cover"
             />
             <div className="absolute inset-0 img-overlay" />
 
-            <div className="relative z-10 flex flex-col items-center justify-end h-full pb-20 px-5 text-start text-white ">
-                <h1 className="w-full text-xl font-semibold mb-2 text-left">
+            <div className="relative z-10 flex flex-col items-center justify-end h-full pb-10 px-5 text-start text-white">
+                <h1 className="w-full text-xl font-extralight mb-2 text-left">
                     Make a Difference <br /> Anytime, Anywhere.
                 </h1>
-                <p className=" w-full text-sm text-gray-200 mb-6 text-left">
+                <p className=" w-full text-sm text-gray-200 mb-6 text-left ">
                     Explore causes, lend a hand to spark change with every action!
                 </p>
-                <div className="flex flex-col gap-4 w-full ">
+                <div className="flex flex-col gap-4 w-full  ">
                     <button onClick={() => openModal("volunteer")} className="border border-white py-2 rounded-[10px] hover:bg-white hover:text-black transition">
                         Volunteer
                     </button>
@@ -64,3 +64,5 @@ const Landing = () => {
 };
 
 export default Landing;
+
+

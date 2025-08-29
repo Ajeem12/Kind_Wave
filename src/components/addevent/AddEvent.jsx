@@ -56,7 +56,7 @@ const AddEvent = ({ onFormClose, eventToEdit }) => {
         purpose: eventToEdit?.purpose || '',
         impact: eventToEdit?.impact || '',
         stack_holders: eventToEdit?.stack_holders || [],
-        program: eventToEdit?.program || [],
+        program: eventToEdit?.program || '',
         time: eventToEdit?.time || '',
         address: eventToEdit?.address || '',
         role: eventToEdit?.role || [],
@@ -306,14 +306,17 @@ const AddEvent = ({ onFormClose, eventToEdit }) => {
                             onChange={handleChange}
                             placeholder="Select stakeholders"
                         />
-                        <MultiSelect
-                            name="program"
-                            label="Program"
-                            options={fieldType}
-                            selectedValues={formData.program}
-                            onChange={handleChange}
-                            placeholder="Select programs"
-                        />
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Program*</label>
+                            <input
+                                type="text"
+                                name="program"
+                                value={formData.program}
+                                onChange={handleChange}
+                                className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none "
+                                required
+                            />
+                        </div>
 
                     </div>
 
@@ -349,7 +352,7 @@ const AddEvent = ({ onFormClose, eventToEdit }) => {
                     <div>
                         <MultiSelect
                             name="role"
-                            label="Role"
+                            label="Volunteer Role"
                             options={programRole}
                             selectedValues={formData.role}
                             onChange={handleChange}

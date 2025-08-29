@@ -1,7 +1,7 @@
 import { FaCamera, FaLock, FaPen, FaRegBell, FaBell, FaSlidersH } from "react-icons/fa";
 import { FaArrowRight } from "react-icons/fa6";
 import { MdEvent } from "react-icons/md";
-import { FiLogOut, FiMail } from "react-icons/fi";
+import { FiLogOut, FiMail, FiUser } from "react-icons/fi";
 import { getVolProfile } from "../../../api/volProfileApi";
 import useOrgAuthStore from "../../../store/useOrgAuthStore";
 import AddEvent from "../../../components/addevent/AddEvent";
@@ -10,7 +10,6 @@ import { useQuery } from "@tanstack/react-query";
 import UpdateProfile from "../../../components/updateProfileForOrg/UpdateProfie";
 import { useLocation, useNavigate } from "react-router-dom";
 import { appliedVolForOrg } from "../../../api/appliedVolListForOrgApi";
-
 
 const ProfilePage = () => {
     const navigate = useNavigate();
@@ -60,14 +59,16 @@ const ProfilePage = () => {
         navigate('/reset-password', { state: { userData } });
     };
 
-
-
     const handleNotification = () => {
         navigate("/notification");
     };
 
     const handleProfileUpdate = () => {
         navigate("/update-profile", { state: { userData } })
+    }
+
+    const handleUpdateProfilePhoto = () => {
+        navigate("/edit-profile", { state: { userData } })
     }
 
     const { data: userProfileData } = useQuery({
@@ -77,8 +78,6 @@ const ProfilePage = () => {
     });
 
     const userData = userProfileData?.data;
-
-
     const imgUrl = import.meta.env.VITE_MEDIA_URL;
 
     const getNotificationIcon = () => {
@@ -97,25 +96,39 @@ const ProfilePage = () => {
         return <FaRegBell />;
     };
 
-    const profilePageItems = [
-        ...(role === 2 ? [{ id: 1, text: 'Update Profile ', icon: <FaCamera />, completed: false, onClick: handleProfileUpdate },] : []),
-        ...(role === 1 ? [{ id: 2, text: 'Update Profile', icon: <FaPen />, completed: false, onClick: handleUpdateProfile }] : []),
-        { id: 3, text: 'Change Password', icon: <FaLock />, completed: false, onClick: handleResetPassword },
-        ...(role === 1 ? [{
-            id: 4,
-            text: 'Notifications',
-            icon: getNotificationIcon(),
-            completed: false,
-            onClick: handleNotification,
-            badge: hasPendingApplications ? pendingApplications.length : null
-        }] : []),
+    // Create profile items based on role
+    const getProfilePageItems = () => {
+        const items = [];
 
-        ...(role === 1 ? [{ id: 5, text: 'Add Event', icon: <MdEvent />, completed: false, onClick: handleAddEventClick }] : []),
+        if (role === 2) { // User/Volunteer
+            items.push(
+                // { id: 1, text: 'Update Profile', icon: <FiUser />, onClick: handleProfileUpdate },
+                { id: 2, text: 'Update Profile Photo', icon: <FaCamera />, onClick: handleUpdateProfilePhoto }
+            );
+        } else if (role === 1) { // Organization
+            items.push(
+                { id: 3, text: 'Update Profile', icon: <FaPen />, onClick: handleUpdateProfile },
+                {
+                    id: 5,
+                    text: 'Notifications',
+                    icon: getNotificationIcon(),
+                    onClick: handleNotification,
+                    badge: hasPendingApplications ? pendingApplications.length : null
+                },
+                { id: 6, text: 'Add Event', icon: <MdEvent />, onClick: handleAddEventClick }
+            );
+        }
 
-        { id: 6, text: 'Log Out', icon: <FiLogOut />, completed: false, onClick: handleLogout },
-    ];
+        // Common items for both roles
+        items.push(
+            { id: 4, text: 'Change Password', icon: <FaLock />, onClick: handleResetPassword },
+            { id: 7, text: 'Log Out', icon: <FiLogOut />, onClick: handleLogout }
+        );
 
+        return items;
+    };
 
+    const profilePageItems = getProfilePageItems();
 
     return (
         <div className="relative mb-10">
@@ -137,39 +150,40 @@ const ProfilePage = () => {
                             className="w-20 h-20 rounded-full"
                         />
                     </div>
-                    <h1 className="mt-4 text-xl font-bold text-white tracking-wide">{userData?.full_name}</h1>
+                    <h1 className="mt-4 text-xl font-bold text-white tracking-wide uppercase">{userData?.full_name}</h1>
                 </div>
 
                 {/* Options Section */}
-                <div className="w-[85%] max-w-sm bg-white mt-8 rounded-md  overflow-hidden">
-                    {profilePageItems.map((item) => (
+                <div className="w-[85%] max-w-sm bg-white mt-8 rounded-md overflow-hidden">
+                    {profilePageItems.map((item, index) => (
                         <div
                             key={item.id}
                             onClick={item.onClick}
-                            className={`flex items-center justify-between p-2 cursor-pointer ${item.id !== profilePageItems[profilePageItems.length - 1].id ? 'border-b border-gray-200' : ''}`}
+                            className={`flex items-center justify-between p-2 cursor-pointer ${index !== profilePageItems.length - 1 ? 'border-b border-gray-200' : ''}`}
                         >
                             <div className="flex items-center space-x-3">
                                 <span className="text-lg">{item.icon}</span>
                                 <span className="text-sm text-gray-800">{item.text}</span>
+                                {/* {item.badge && (
+                                    <span className="bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                                        {item.badge}
+                                    </span>
+                                )} */}
                             </div>
                             <FaArrowRight className="text-gray-300" />
                         </div>
                     ))}
                 </div>
-            </div >
+            </div>
 
             {/* Modals */}
-            {
-                showAddEventModal && (
-                    <AddEvent onFormClose={() => setShowAddEventModal(false)} />
-                )
-            }
-            {
-                showEditProfileModal && (
-                    <UpdateProfile data={orgProfileData} onFormClose={() => setShowEditProfileModal(false)} />
-                )
-            }
-        </div >
+            {showAddEventModal && (
+                <AddEvent onFormClose={() => setShowAddEventModal(false)} />
+            )}
+            {showEditProfileModal && (
+                <UpdateProfile data={orgProfileData} onFormClose={() => setShowEditProfileModal(false)} />
+            )}
+        </div>
     );
 };
 

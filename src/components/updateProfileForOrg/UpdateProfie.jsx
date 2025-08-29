@@ -13,6 +13,7 @@ const UpdateProfile = ({ onFormClose, data }) => {
         address: data?.address || '',
         contact_no: data?.contact_no || '',
         image: null,
+        impact: data?.impact || '',
         country: data?.country ? { value: data.country.id, label: data.country.name } : null,
         city: data?.city ? { value: data.city.id, label: data.city.name } : null
     });
@@ -142,6 +143,21 @@ const UpdateProfile = ({ onFormClose, data }) => {
                                 onChange={handleChange}
                                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
                                 placeholder="Enter contact number"
+                                required
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Impact
+                            </label>
+                            <input
+                                type="number"
+                                name="impact"
+                                value={formData.impact}
+                                onChange={handleChange}
+                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+                                placeholder="Enter Impact"
                                 required
                             />
                         </div>

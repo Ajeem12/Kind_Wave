@@ -1,5 +1,6 @@
 import React from 'react';
-import { FiChevronDown, FiChevronUp, FiFilter } from 'react-icons/fi';
+import { FiChevronDown, FiChevronUp } from 'react-icons/fi';
+import { FaFilter } from "react-icons/fa";
 import useOrgAuthStore from '../../store/useOrgAuthStore';
 import { Link } from 'react-router-dom';
 
@@ -38,13 +39,13 @@ const AllApplications = ({
         <div className="space-y-4">
             <div className="flex justify-between items-center">
                 <h2 className="text-base font-semibold text-gray-800 ml-2">All</h2>
-                <button
+                {/* <button
                     className="p-1 rounded-full hover:bg-gray-100 transition-colors"
                     onClick={() => setIsFilterOpen(true)}
                     aria-label="Filter applications"
                 >
-                    <FiFilter className="w-4 h-4 text-gray-600" />
-                </button>
+                    <FaFilter className="w-4 h-4 text-[#8b8686]" />
+                </button> */}
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -80,7 +81,7 @@ const AllApplications = ({
 
                     return role === 1 ? (
                         <Link
-                            to={`/vol-details/${app.volunteer_id}`}
+                            // to={`/vol-details/${app.volunteer_id}`}
                             key={app.id}
                         >
                             {applicationCard}

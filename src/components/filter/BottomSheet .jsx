@@ -11,6 +11,7 @@ import RegionPanel from "./RegionPanel";
 import useOrgAuthStore from "../../store/useOrgAuthStore";
 import { getProgramRole } from "../../api/getProgramRoleApi";
 import { getStackHolderCom } from "../../api/stackHolderCommunityApi";
+import { getCategories } from "../../api/getCategoriesApi";
 
 
 
@@ -43,8 +44,16 @@ const useOrgList = () => {
     });
 }
 
+const useCategories = () => {
+    return useQuery({
+        queryKey: ['categories'],
+        queryFn: getCategories,
+    });
+};
+
 const BottomSheet = ({ isOpen, onClose, selectedFilters, setSelectedFilters, handleSearch }) => {
     const [showOrgSelect, setShowOrgSelect] = useState(false);
+    const [sortOption, setSortOption] = useState("");
     const [selectedOrgs, setSelectedOrgs] = useState([]);
     const [showOrgTypeSelect, setShowOrgTypeSelect] = useState(false);
     const [selectedOrgTypes, setSelectedOrgTypes] = useState([]);
@@ -62,9 +71,6 @@ const BottomSheet = ({ isOpen, onClose, selectedFilters, setSelectedFilters, han
     const { data: programRoleData, } = useProgramRole();
     const { data: stackHolderComData, } = useStackHolderCom();
     const { data: orgListData, } = useOrgList();
-
-
-
 
 
 
@@ -92,18 +98,13 @@ const BottomSheet = ({ isOpen, onClose, selectedFilters, setSelectedFilters, han
     })) || [];
 
 
+    const { data: categoriesData, } = useCategories();
+    const orgnizationType = categoriesData?.data?.map((item) => ({
+        id: item.id,
+        label: item.category_name,
+    })) || [];
 
-    const orgnizationType = [
-        { id: 1, label: "Community-Based Organizations (CBOs)" },
-        { id: 2, label: "Corporate Social Responsibility (CSR)" },
-        { id: 3, label: "Government Welfare Agencies" },
-        { id: 4, label: "Fundraisers" },
-        { id: 5, label: "Hybrid Models" },
-        { id: 6, label: "International Aid" },
-        { id: 7, label: "Mutual Aid Networks" },
-        { id: 8, label: "Non-Governmental Organizations (NGO)" },
-        { id: 9, label: "Nonprofits & Charities" },
-    ];
+
 
 
     const organizations = orgListData?.data?.map((item) => ({
@@ -132,6 +133,21 @@ const BottomSheet = ({ isOpen, onClose, selectedFilters, setSelectedFilters, han
 
 
     const cityOptions = cities;
+
+    const sortedOrganizations = [...organizations].sort((a, b) => {
+        if (sortOption === "az") {
+            return a.label.localeCompare(b.label);
+        }
+        if (sortOption === "date") {
+            // If you have a date property, sort by it
+            return new Date(a.date) - new Date(b.date);
+        }
+        if (sortOption === "name") {
+            return a.label.localeCompare(b.label);
+        }
+        return 0;
+    });
+
 
 
     return (
@@ -185,8 +201,12 @@ const BottomSheet = ({ isOpen, onClose, selectedFilters, setSelectedFilters, han
                                 </div>
                                 {/* Sort Dropdown */}
                                 <div className="mb-2">
-                                    <select className="w-full p-3 border border-gray-300 rounded-lg outline-none cursor-pointer text-xs">
-                                        <option disabled selected className="text-gray-400">Sort by</option>
+                                    <select
+                                        className="w-full p-3 border border-gray-300 rounded-lg outline-none cursor-pointer text-xs"
+                                        value={sortOption}
+                                        onChange={e => setSortOption(e.target.value)}
+                                    >
+                                        <option value="" disabled className="text-gray-400">Sort by</option>
                                         <option value="az">Alphabetical (A-Z)</option>
                                         <option value="date">Date</option>
                                         <option value="name">Name</option>
@@ -249,7 +269,8 @@ const BottomSheet = ({ isOpen, onClose, selectedFilters, setSelectedFilters, han
                         {showOrgSelect && (
                             <FilterPanel
                                 title="Organisation"
-                                options={organizations}
+                                // options={organizations}
+                                options={sortedOrganizations}
                                 selected={selectedOrgs}
                                 setSelected={setSelectedOrgs}
                                 handleSearch={handleSearch}
